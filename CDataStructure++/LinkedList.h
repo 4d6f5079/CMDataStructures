@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 #include "Node.h"
 
 template<typename V>
@@ -10,7 +11,6 @@ public:
 	LinkedList()
 		:
 		headNode(nullptr),
-		//lastNode(headNode),
 		size(0)
 	{
 	}
@@ -18,15 +18,12 @@ public:
 	LinkedList(const V& data)
 		:
 		headNode(new Node<V>(data)),
-		//lastNode(headNode),
 		size(1)
 	{
-		//std::cout << "Second constructor of the LinkedList is called" << " Mem addr : " << this << std::endl;
 	}
 
 	~LinkedList()
 	{
-		//std::cout << "LinkedList Destructor " << this << " called." << std::endl;
 		const Node<V>* tempNext = headNode;
 		while (tempNext != nullptr)
 		{
@@ -92,6 +89,50 @@ public:
 
 		size++; // increment the size of the linked list.
 	}
+	
+	size_t deleteNodesGivenData(const V& data)
+	{
+		Node<V>* prevNode = nullptr;
+		Node<V>* currNode = headNode;
+		size_t amountNodesDeleted = NULL;
+
+		while (currNode != nullptr)
+		{
+			if (currNode->data == data)
+			{
+				if (currNode == headNode)
+				{
+					// delete at head
+					deleteAtHead();
+					currNode = this->headNode;
+				}
+				else
+				{
+					// delete node somewhere in the linked list
+					prevNode->next = currNode->next;
+					delete currNode;
+					currNode = prevNode->next;
+				}
+				amountNodesDeleted++;
+			}
+			else
+			{
+				// continue, there is nothing to delete
+				prevNode = currNode;
+				currNode = currNode->next;
+			}
+		}
+
+		if (amountNodesDeleted)
+		{
+			return amountNodesDeleted;
+		}
+		else
+		{
+			std::cout << "Node with data: '" << data << "' does not exist." << std::endl;
+			return NULL;
+		}
+	}
 
 	void deleteAtHead()
 	{
@@ -103,24 +144,19 @@ public:
 	/*
 	*	Assumption: type V already implemented the == operator for comparisons.
 	*/
-	Node<V>& getNode(const V& data)
+	std::unique_ptr<Node<V>> getNode(const V& data)
 	{
-		if (this->headNode->data == data)
+		Node<V>* nextNode = this->headNode;
+		while (nextNode != nullptr)
 		{
-			return *headNode;
-		}
-		else
-		{
-			Node<V>* nextNode = this->headNode;
-			while (nextNode != nullptr)
+			if (nextNode->data == data)
 			{
-				if (nextNode->data == data)
-				{
-					return *nextNode;
-				}
-				nextNode = nextNode->next;
+				return std::make_unique<Node<V>>(*nextNode);
 			}
+			nextNode = nextNode->next;
 		}
+		std::cout << "Node with data: '" << data << "' does not exist." << std::endl;
+		return nullptr;
 	}
 
 	size_t getSize()

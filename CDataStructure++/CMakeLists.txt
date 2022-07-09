@@ -4,6 +4,6 @@
 cmake_minimum_required (VERSION 3.8)
 
 # Add source to this project's executable.
-# add_executable (HashTable "HashTable.cpp" "HashTable.h" "LinkedList.cpp" "LinkedList.h" "Node.cpp" "Node.h")
+# add_executable (CDataStructure++ "HashTable.cpp" "HashTable.h" "LinkedList.cpp" "LinkedList.h" "Node.cpp" "Node.h")
 
 # TODO: Add tests and install targets if needed.

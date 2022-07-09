@@ -3,18 +3,18 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project ("HashTableTesting")
+project ("CDataStructure++")
 
 # Include sub-projects.
-add_subdirectory ("HashTableTesting")
+add_subdirectory ("CDataStructure++")
 
 add_executable (
-	HashTable 
+	CDataStructure++
 	"main.cpp" 
-	"HashTableTesting/HashTable.cpp" 
-	"HashTableTesting/HashTable.h" 
-	"HashTableTesting/LinkedList.cpp" 
-	"HashTableTesting/LinkedList.h" 
-	"HashTableTesting/Node.cpp" 
-	"HashTableTesting/Node.h"
-)
+	"CDataStructure++/HashTable.cpp" 
+	"CDataStructure++/HashTable.h" 
+	"CDataStructure++/LinkedList.cpp" 
+	"CDataStructure++/LinkedList.h" 
+	"CDataStructure++/Node.cpp" 
+	"CDataStructure++/Node.h"
+  "CDataStructure++/Timer/Timer.h" "CDataStructure++/Timer/Timer.cpp")

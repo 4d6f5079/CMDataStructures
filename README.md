@@ -1,2 +1,3 @@
-# SimpleHashTableImpl
-Simple implementation of a hash table using C++. This is just an exercise to understand how raw pointers work in C++.
+# CDataStructure++
+
+Various data structures implementations in C++. This is just an exercise for me to understand how raw pointers work in C++ and get acquinted with C++ bloated ecosystem ( don't ask me why :) ).

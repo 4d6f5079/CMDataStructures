@@ -6,6 +6,13 @@ template<typename T>
 class Node
 {
 public:
+	Node()
+		:
+		data(nullptr),
+		next(nullptr)
+	{
+	}
+
 	Node(const T& data)
 		:
 		data(data),
