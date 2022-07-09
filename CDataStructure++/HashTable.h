@@ -66,7 +66,7 @@ public:
 	{
 		for (size_t i = 0; i < capacity; ++i)
 		{
-			auto ll = static_cast<LinkedList<V>*>(hashTable[i]);
+			const auto ll = static_cast<LinkedList<V>*>(hashTable[i]);
 			if (ll != nullptr)
 			{
 				std::cout << "Bin: " << i << "\t" << "Values: " << ll->getSize() << std::endl;

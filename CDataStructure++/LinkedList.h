@@ -24,18 +24,18 @@ public:
 
 	~LinkedList()
 	{
-		const Node<V>* tempNext = headNode;
+		Node<V>* tempNext = headNode;
 		while (tempNext != nullptr)
 		{
-			const auto temp = tempNext->next;
+			auto temp = tempNext->next;
 			delete tempNext;
 			tempNext = temp;
 		}
 	}
 
-	void printNodes(const uint32_t& depth = 5)
+	void printNodes(const size_t depth = 5)
 	{
-		uint32_t currDepth = 0;
+		size_t currDepth = 0;
 		Node<V>* currNode = this->headNode;
 
 		while (currDepth < depth && currNode != nullptr)
