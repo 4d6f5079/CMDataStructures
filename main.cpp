@@ -1,6 +1,6 @@
-#include "HashTable.h"
-#include "LinkedList.h"
-#include "Node.h"
+#include "HashTableTesting/HashTable.h"
+#include "HashTableTesting/LinkedList.h"
+#include "HashTableTesting/Node.h"
 #include <random>
 #include <iostream>
 #include <functional>
