@@ -1,8 +1,11 @@
 #include "CDataStructure++/HashTable.h"
 #include "CDataStructure++/LinkedList.h"
+#include "CDataStructure++/Timer/Timer.h"
 #include <random>
 #include <iostream>
 #include <functional>
+#include <algorithm>
+#include <exception>
 
 std::string randomStrGen(uint32_t length, int32_t rndNum)
 {
@@ -36,40 +39,55 @@ int main(int argc, char* argv[])
 	}*/
 
 	// Constants
-	static constexpr auto LOOP_ITERATIONS_POPULATION = 10000000;
+	static constexpr auto LOOP_ITERATIONS_POPULATION = 10;
 	static constexpr auto UNIFORM_DIST_RND_MIN = 0;
 	static constexpr auto UNIFORM_DIST_RND_MAX = 500000;
-	static constexpr uint32_t RND_STIRNGS_LEN = 25;
+	static constexpr uint32_t RND_STIRNGS_LEN = 5;
 	static constexpr size_t HASH_TABLE_CAP = 15;
-
-	// Initialize the uniform int generator and create binds to use the generator and random string generator
-	// as functions
-	std::default_random_engine generator;
-	std::uniform_int_distribution<uint32_t> distribution(UNIFORM_DIST_RND_MIN, UNIFORM_DIST_RND_MAX);
-	auto roll_dice = std::bind(distribution, generator);
-	const auto getRandomString = std::bind(&randomStrGen, std::placeholders::_1, std::placeholders::_2);
-
-	// Init hash table and a string to store 1 key for testing
-	std::string k;
-	HashTable<std::string, int32_t> ht(HASH_TABLE_CAP);
-
-	// Popluating Ht in a loop with randomly generatored keys and values
-	for (size_t i = 0; i < LOOP_ITERATIONS_POPULATION; ++i)
+	
+	try
 	{
-		const auto newValue = roll_dice();
-		const auto newKey = getRandomString(RND_STIRNGS_LEN, roll_dice());
-		ht.put(newKey, newValue);
+		// Initialize the uniform int generator and create binds to use the generator and random string generator
+		// as functions. This is done to have a uniform distribution of inputs so that a good hash can uniformaly distribute inputs
+		// throughout the bins.
+		std::default_random_engine generator;
+		std::uniform_int_distribution<uint32_t> distribution(UNIFORM_DIST_RND_MIN, UNIFORM_DIST_RND_MAX);
+		auto roll_dice = std::bind(distribution, generator);
+		const auto getRandomString = std::bind(&randomStrGen, std::placeholders::_1, std::placeholders::_2);
 
-		// FOR TESTING
-		if (i == 0)
+		// Init hash table
+		HashTable<std::string, uint32_t> ht(HASH_TABLE_CAP);
+
+		// Init vectors for randomly generated keys and values
+		std::vector<std::string> rndStrs;
+		std::vector<uint32_t> rndVals;
+		rndStrs.clear();
+		rndStrs.reserve(LOOP_ITERATIONS_POPULATION);
+		rndVals.clear();
+		rndVals.reserve(LOOP_ITERATIONS_POPULATION);
+		for (size_t i = 0; i < LOOP_ITERATIONS_POPULATION; ++i)
 		{
-			k = newKey;
+			rndStrs.emplace_back(getRandomString(RND_STIRNGS_LEN, roll_dice()));
+			rndVals.emplace_back(roll_dice());
 		}
+
+		// Popluating Ht with benchmarking for put
+		{
+			Timer timer;
+			for (size_t i = 0; i < LOOP_ITERATIONS_POPULATION; ++i)
+			{
+				ht.put(rndStrs.at(i), rndVals.at(i));
+			}
+		}
+
+		// Some Informational print outs for debugging 
+		ht.get(rndStrs[0]).printNodes();
+		ht.printBinsInfo();
+
+		return 0;
 	}
-
-	// Some Informational print outs for debugging 
-	ht.get(k).printNodes();
-	ht.printBinsInfo();
-
-	return 0;
+	catch (const std::exception& e)
+	{
+		return -1;
+	}
 }
