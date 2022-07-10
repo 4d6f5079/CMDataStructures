@@ -1,6 +1,7 @@
 #include "CDataStructure++/HashTable/HashTable.h"
 #include "CDataStructure++/LinkedList/LinkedList.h"
 #include "CDataStructure++/Timer/Timer.h"
+#include "CDataStructure++/BinaryTree/BinaryTree.h"
 #include <random>
 #include <iostream>
 #include <functional>
@@ -20,20 +21,28 @@ std::string randomStrGen(size_t length, size_t rndNum)
 }
 
 // This section is for testing the LinkedList
-void testingLinkedList()
+int testingLinkedList()
 {
-	LinkedList<std::string> ll(std::string("Hallo"));
-	ll.insertAtHead(std::string("Yo"));
-	ll.insertAtHead(std::string("No"));
-	ll.insertAtHead(std::string("No"));
-	ll.insertAtHead(std::string("No"));
-	ll.deleteNodesGivenData(std::string("No"));
-	ll.deleteNodesGivenData(std::string("Hallo"));
-	ll.printNodes();
-	const auto getANode = ll.getNode(std::string("Yo"));
-	if (getANode != nullptr)
+	try
 	{
-		std::cout << *(getANode) << std::endl;
+		LinkedList<std::string> ll(std::string("Hallo"));
+		ll.insertAtHead(std::string("Yo"));
+		ll.insertAtHead(std::string("No"));
+		ll.insertAtHead(std::string("No"));
+		ll.insertAtHead(std::string("No"));
+		ll.deleteNodesGivenData(std::string("No"));
+		ll.deleteNodesGivenData(std::string("Hallo"));
+		ll.printNodes();
+		const auto getANode = ll.getNode(std::string("Yo"));
+		if (getANode != nullptr)
+		{
+			std::cout << *(getANode) << std::endl;
+		}
+		return 0;
+	}
+	catch (const std::exception&)
+	{
+		return -1;
 	}
 }
 
@@ -95,5 +104,6 @@ int testingHashTableWithBenchmark()
 
 int main(int argc, char* argv[])
 {	
-	return testingHashTableWithBenchmark();
+	//return testingHashTableWithBenchmark();
+	BinaryTree<size_t> bt(1);
 }
