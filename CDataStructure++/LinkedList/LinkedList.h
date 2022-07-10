@@ -38,6 +38,12 @@ public:
 		size_t currDepth = 0;
 		Node<V>* currNode = this->headNode;
 
+		std::cout << "\n";
+		std::cout << "----------------------";
+		std::cout << "LINKED LIST STRUCTURE START";
+		std::cout << "----------------------";
+		std::cout << "\n\n";
+
 		while (currDepth < depth && currNode != nullptr)
 		{
 			std::cout << "\t---" << "\n";
@@ -59,6 +65,11 @@ public:
 			currDepth++;
 			currNode = currNode->next;
 		}
+
+		std::cout << "----------------------";
+		std::cout << "LINKED LIST STRUCTURE END";
+		std::cout << "----------------------";
+		std::cout << "\n\n";
 	}
 
 	//void insertNode(Node<V>* const node)

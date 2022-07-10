@@ -20,5 +20,5 @@ void Timer::Stop()
 	auto durationMicroSeconds = end - start;
 	double millis = durationMicroSeconds * 0.001;
 
-	std::cout << durationMicroSeconds << "us (" << millis << "ms)\n";
+	std::cout << "Runtime taken: " << durationMicroSeconds << "us (" << millis << "ms)\n";
 }

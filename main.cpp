@@ -19,32 +19,33 @@ std::string randomStrGen(size_t length, size_t rndNum)
 	return result;
 }
 
-int main(int argc, char* argv[])
-{	
-	// This section is for testing the LinkedList
+// This section is for testing the LinkedList
+void testingLinkedList()
+{
+	LinkedList<std::string> ll(std::string("Hallo"));
+	ll.insertAtHead(std::string("Yo"));
+	ll.insertAtHead(std::string("No"));
+	ll.insertAtHead(std::string("No"));
+	ll.insertAtHead(std::string("No"));
+	ll.deleteNodesGivenData(std::string("No"));
+	ll.deleteNodesGivenData(std::string("Hallo"));
+	ll.printNodes();
+	const auto getANode = ll.getNode(std::string("Yo"));
+	if (getANode != nullptr)
 	{
-		LinkedList<std::string> ll(std::string("Hallo"));
-		ll.insertAtHead(std::string("Yo"));
-		ll.insertAtHead(std::string("No"));
-		ll.insertAtHead(std::string("No"));
-		ll.insertAtHead(std::string("No"));
-		ll.deleteNodesGivenData(std::string("No"));
-		ll.deleteNodesGivenData(std::string("Hallo"));
-		ll.printNodes();
-		const auto getANode = ll.getNode(std::string("Yo"));
-		if (getANode != nullptr)
-		{
-			std::cout << *(getANode) << std::endl;
-		}
+		std::cout << *(getANode) << std::endl;
 	}
+}
 
+int testingHashTableWithBenchmark()
+{
 	// Constants
 	static constexpr auto LOOP_ITERATIONS_POPULATION = 500;
 	static constexpr auto UNIFORM_DIST_RND_MIN = 0;
 	static constexpr auto UNIFORM_DIST_RND_MAX = 500000;
 	static constexpr auto RND_STIRNGS_LEN = 5;
 	static constexpr auto HASH_TABLE_CAP = 15;
-	
+
 	try
 	{
 		// Initialize the uniform int generator and create binds to use the generator and random string generator
@@ -90,4 +91,9 @@ int main(int argc, char* argv[])
 	{
 		return -1;
 	}
+}
+
+int main(int argc, char* argv[])
+{	
+	return testingHashTableWithBenchmark();
 }
