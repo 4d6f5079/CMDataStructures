@@ -11,10 +11,10 @@ add_subdirectory ("CDataStructure++")
 add_executable (
 	CDataStructure++
 	"main.cpp" 
-	"CDataStructure++/HashTable.cpp" 
-	"CDataStructure++/HashTable.h" 
-	"CDataStructure++/LinkedList.cpp" 
-	"CDataStructure++/LinkedList.h" 
-	"CDataStructure++/Node.cpp" 
-	"CDataStructure++/Node.h"
-  "CDataStructure++/Timer/Timer.h" "CDataStructure++/Timer/Timer.cpp")
+	"CDataStructure++/HashTable/HashTable.cpp" 
+	"CDataStructure++/HashTable/HashTable.h" 
+	"CDataStructure++/LinkedList/LinkedList.cpp" 
+	"CDataStructure++/LinkedList/LinkedList.h" 
+	"CDataStructure++/LinkedList/Node.cpp" 
+	"CDataStructure++/LinkedList/Node.h"
+  "CDataStructure++/Timer/Timer.h" "CDataStructure++/Timer/Timer.cpp" "CDataStructure++/BinaryTree/Node.h" "CDataStructure++/BinaryTree/BinaryTree.h")

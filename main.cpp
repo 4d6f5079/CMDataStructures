@@ -1,5 +1,5 @@
-#include "CDataStructure++/HashTable.h"
-#include "CDataStructure++/LinkedList.h"
+#include "CDataStructure++/HashTable/HashTable.h"
+#include "CDataStructure++/LinkedList/LinkedList.h"
 #include "CDataStructure++/Timer/Timer.h"
 #include <random>
 #include <iostream>

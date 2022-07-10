@@ -5,7 +5,7 @@
 #include <array>
 #include <memory>
 #include <functional>
-#include "LinkedList.h"
+#include "../LinkedList/LinkedList.h"
 
 template<typename K, typename V>
 class HashTable
