@@ -16,5 +16,4 @@ add_executable (
 	"CDataStructure++/LinkedList/LinkedList.cpp" 
 	"CDataStructure++/LinkedList/LinkedList.h" 
 	"CDataStructure++/LinkedList/Node.cpp" 
-	"CDataStructure++/BinaryTree/BinaryTreeNode.h"
-  "CDataStructure++/Timer/Timer.h" "CDataStructure++/Timer/Timer.cpp" "CDataStructure++/BinaryTree/BinaryTreeNode.h" "CDataStructure++/BinaryTree/BinaryTree.h")
+  "CDataStructure++/Timer/Timer.h" "CDataStructure++/Timer/Timer.cpp" "CDataStructure++/BinarySearchTree/BinarySearchTreeNode.h" "CDataStructure++/BinarySearchTree/BinarySearchTree.h")

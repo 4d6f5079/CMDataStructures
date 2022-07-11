@@ -1,7 +1,7 @@
 #include "CDataStructure++/HashTable/HashTable.h"
 #include "CDataStructure++/LinkedList/LinkedList.h"
 #include "CDataStructure++/Timer/Timer.h"
-#include "CDataStructure++/BinaryTree/BinaryTree.h"
+#include "CDataStructure++/BinarySearchTree/BinarySearchTree.h"
 #include <random>
 #include <iostream>
 #include <functional>
@@ -105,5 +105,10 @@ int testingHashTableWithBenchmark()
 int main(int argc, char* argv[])
 {	
 	//return testingHashTableWithBenchmark();
-	BinaryTree<size_t> bt(1);
+	BinarySearchTree<int> bst(1);
+	bst.insertNode(-2);
+	bst.insertNode(2);
+	bst.insertNode(2);
+	bst.insertNode(5);
+	bst.insertNode(-1);
 }

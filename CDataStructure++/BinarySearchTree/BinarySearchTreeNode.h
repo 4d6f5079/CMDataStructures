@@ -1,10 +1,10 @@
 #pragma once
 
 template<typename T>
-class BinaryTreeNode
+class BinarySearchTreeNode
 {
 public:
-	BinaryTreeNode()
+	BinarySearchTreeNode()
 		:
 		data(NULL),
 		left(nullptr),
@@ -12,7 +12,7 @@ public:
 	{
 	}
 
-	BinaryTreeNode(const T& data)
+	BinarySearchTreeNode(const T& data)
 		:
 		data(data),
 		left(nullptr),
@@ -20,10 +20,10 @@ public:
 	{
 	}
 
-	BinaryTreeNode(
+	BinarySearchTreeNode(
 		const T& data,
-		BinaryTreeNode* left,
-		BinaryTreeNode* right
+		BinarySearchTreeNode* left,
+		BinarySearchTreeNode* right
 	)
 		:
 		data(data),
@@ -32,7 +32,7 @@ public:
 	{
 	}
 
-	~BinaryTreeNode()
+	~BinarySearchTreeNode()
 	{
 		if (hasRight())
 			right = nullptr;
@@ -40,12 +40,12 @@ public:
 			left = nullptr;
 	}
 
-	const BinaryTreeNode& getLeft()
+	BinarySearchTreeNode* getLeft()
 	{
 		return left;
 	}
 	
-	const BinaryTreeNode& getRight()
+	BinarySearchTreeNode* getRight()
 	{
 		return right;
 	}
@@ -59,7 +59,7 @@ public:
 		return false;
 	}
 
-	const bool hasLeft()
+	bool hasLeft()
 	{
 		if (left != nullptr)
 		{
@@ -68,7 +68,7 @@ public:
 		return false;
 	}
 
-	const bool hasData()
+	bool hasData()
 	{
 		if (data != NULL)
 		{
@@ -82,8 +82,18 @@ public:
 		return data;
 	}
 
+	void setLeft(BinarySearchTreeNode* newLeft)
+	{
+		this->left = newLeft;
+	}
+
+	void setRight(BinarySearchTreeNode* newRight)
+	{
+		this->right = newRight;
+	}
+
 private:
 	const T data;
-	BinaryTreeNode* left;
-	BinaryTreeNode* right;
+	BinarySearchTreeNode* left;
+	BinarySearchTreeNode* right;
 };
