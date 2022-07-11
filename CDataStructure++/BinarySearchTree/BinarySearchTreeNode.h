@@ -4,14 +4,6 @@ template<typename T>
 class BinarySearchTreeNode
 {
 public:
-	BinarySearchTreeNode()
-		:
-		data(NULL),
-		left(nullptr),
-		right(nullptr)
-	{
-	}
-
 	BinarySearchTreeNode(const T& data)
 		:
 		data(data),
@@ -62,15 +54,6 @@ public:
 	bool hasLeft()
 	{
 		if (left != nullptr)
-		{
-			return true;
-		}
-		return false;
-	}
-
-	bool hasData()
-	{
-		if (data != NULL)
 		{
 			return true;
 		}

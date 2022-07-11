@@ -102,13 +102,28 @@ int testingHashTableWithBenchmark()
 	}
 }
 
+int testingBinarySearchTree()
+{
+	// TODO: this causes memory leak in case of an exception
+	try
+	{
+		BinarySearchTree<int> bst(1);
+		bst.insertNode(-2);
+		bst.insertNode(2);
+		bst.insertNode(2);
+		bst.insertNode(5);
+		bst.insertNode(-1);
+		bst.DFS(5);
+		return 0;
+	}
+	catch (const std::exception&)
+	{
+		return -1;
+	}
+}
+
 int main(int argc, char* argv[])
 {	
 	//return testingHashTableWithBenchmark();
-	BinarySearchTree<int> bst(1);
-	bst.insertNode(-2);
-	bst.insertNode(2);
-	bst.insertNode(2);
-	bst.insertNode(5);
-	bst.insertNode(-1);
+	testingBinarySearchTree();
 }
