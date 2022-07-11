@@ -105,6 +105,7 @@ int testingHashTableWithBenchmark()
 int testingBinarySearchTree()
 {
 	// TODO: this causes memory leak in case of an exception
+	//	destructor of bst is not called.
 	try
 	{
 		BinarySearchTree<int> bst(1);
@@ -124,6 +125,7 @@ int testingBinarySearchTree()
 
 int main(int argc, char* argv[])
 {	
-	//return testingHashTableWithBenchmark();
-	testingBinarySearchTree();
+	testingHashTableWithBenchmark();
+	//testingBinarySearchTree();
+	system("PAUSE");
 }

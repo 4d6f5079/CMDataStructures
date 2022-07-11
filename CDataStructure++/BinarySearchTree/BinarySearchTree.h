@@ -56,6 +56,11 @@ public:
 		}
 	}
 
+	void printTree()
+	{
+
+	}
+
 	void removeNode(const T& data)
 	{
 		BinarySearchTreeNode<T>* currNode = root;
