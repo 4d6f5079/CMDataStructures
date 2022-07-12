@@ -108,13 +108,18 @@ int testingBinarySearchTree()
 	//	destructor of bst is not called.
 	try
 	{
-		BinarySearchTree<int> bst(1);
+		BinarySearchTree<float> bst(1);
 		bst.insertNode(-2);
 		bst.insertNode(2);
 		bst.insertNode(2);
+		bst.insertNode(10);
+		bst.insertNode(4);
+		bst.insertNode(100);
 		bst.insertNode(5);
 		bst.insertNode(-1);
-		bst.DFS(5);
+		bst.insertNode(-0.5);
+		std::cout << bst.DFS(5)->getData() << std::endl;
+		bst.printTree();
 		return 0;
 	}
 	catch (const std::exception&)
@@ -125,7 +130,7 @@ int testingBinarySearchTree()
 
 int main(int argc, char* argv[])
 {	
-	testingHashTableWithBenchmark();
-	//testingBinarySearchTree();
+	//testingHashTableWithBenchmark();
+	testingBinarySearchTree();
 	system("PAUSE");
 }

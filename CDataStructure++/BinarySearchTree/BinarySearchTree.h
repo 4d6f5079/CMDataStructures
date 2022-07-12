@@ -56,21 +56,59 @@ public:
 		}
 	}
 
-	void printTree()
+	// from https://stackoverflow.com/questions/36802354/print-binary-tree-in-a-pretty-way-using-c
+	void printTree(const std::string& prefix, BinarySearchTreeNode<T>* node, bool isLeft)
 	{
+		if (node != nullptr)
+		{
+			std::cout << prefix;
 
+			std::cout << (isLeft ? "|-- " : "\\-- ");
+
+			// print the value of the node
+			std::cout << "(" << node->getData() << ")" << std::endl;
+
+			// enter the next tree level - left and right branch
+			printTree(prefix + (isLeft ? "|   " : "    "), node->getLeft(), true);
+			printTree(prefix + (isLeft ? "|   " : "    "), node->getRight(), false);
+		}
+	}
+
+	void printTree(BinarySearchTreeNode<T>* node = nullptr)
+	{
+		std::cout << "Printing the BST\n";
+		std::cout << "|-- = left node (value < parent value)\n";
+		std::cout << "\\-- = right/root node (value > parent value)\n\n";
+		if (node == nullptr)
+		{
+			printTree("", root, false);
+		}
+		else
+		{
+			printTree("", node, false);
+		}
+	}
+
+	void removeNode(const T& data, BinarySearchTreeNode<T>* parentNode, BinarySearchTreeNode<T>* currNode)
+	{
+		if (currNode != nullptr)
+		{
+			if (parentNode != nullptr)
+			{
+				
+			}
+			else
+			{
+				// TODO: root needs to be removed, find successor node and make the new root
+				// If no right and then left node is present, make the right node the root
+				// because there is no node that is smaller than the direct right node
+			}
+		}
 	}
 
 	void removeNode(const T& data)
 	{
-		BinarySearchTreeNode<T>* currNode = root;
-		while (currNode != nullptr)
-		{
-			if (currNode->data == data)
-			{
-				// TODO: need recursion helper functions that keeps track of parent node and the node to the left/right
-			}
-		}
+		return removeNode(data, nullptr, root);
 	}
 
 	void insertNode(const T& data)
@@ -120,7 +158,32 @@ public:
 		}
 	}
 
-	BinarySearchTreeNode<T>* DfsRecursionHelper(const T& data, BinarySearchTreeNode<T>* currRoot)
+	BinarySearchTreeNode<T>* searchNode(const T& data, BinarySearchTreeNode<T>* currNode)
+	{
+		if (currNode != nullptr)
+		{
+			if (currNode->getData() == data)
+			{
+				return currNode;
+			}
+			else if (currNode->hasLeft() && data < currNode->getData())
+			{
+				return searchNode(data, currNode->getLeft());
+			}
+			else if (currNode->hasRight() && data > currNode->getData())
+			{
+				return searchNode(data, currNode->getRight());
+			}
+		}
+		return nullptr;
+	}
+
+	BinarySearchTreeNode<T>* searchNode(const T& data)
+	{
+		return searchNode(data, root);
+	}
+
+	BinarySearchTreeNode<T>* DFS(const T& data, BinarySearchTreeNode<T>* currRoot)
 	{
 		if (currRoot != nullptr)
 		{
@@ -129,14 +192,14 @@ public:
 
 			if (currRoot->hasLeft())
 			{
-				auto foundLeft = DfsRecursionHelper(data, currRoot->getLeft());
+				auto foundLeft = DFS(data, currRoot->getLeft());
 				if (foundLeft)
 					return foundLeft;
 			}
 
 			if (currRoot->getRight())
 			{
-				auto foundRight = DfsRecursionHelper(data, currRoot->getRight());
+				auto foundRight = DFS(data, currRoot->getRight());
 				if (foundRight)
 					return foundRight;
 			}
@@ -147,7 +210,7 @@ public:
 
 	BinarySearchTreeNode<T>* DFS(const T& data)
 	{
-		return DfsRecursionHelper(data, root);
+		return DFS(data, root);
 	}
 
 private:
