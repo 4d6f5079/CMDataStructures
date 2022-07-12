@@ -89,17 +89,36 @@ public:
 		}
 	}
 
+	BinarySearchTreeNode<T>* findInorderSuccessor(BinarySearchTreeNode<T>* currNode)
+	{
+		if (currNode != nullptr)
+		{
+			if (currNode->hasLeft())
+			{
+				return findInorderSuccessor(currNode->getLeft());
+			}
+			else
+			{
+				return currNode;
+			}
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
 	void removeNode(const T& data, BinarySearchTreeNode<T>* parentNode, BinarySearchTreeNode<T>* currNode)
 	{
 		if (currNode != nullptr)
 		{
 			if (parentNode != nullptr)
 			{
-				
+				// some 
 			}
 			else
 			{
-				// TODO: root needs to be removed, find successor node and make the new root
+				// TODO: root needs to be removed, find inorder successor node and make the new root
 				// If no right and then left node is present, make the right node the root
 				// because there is no node that is smaller than the direct right node
 			}
@@ -158,29 +177,54 @@ public:
 		}
 	}
 
-	BinarySearchTreeNode<T>* searchNode(const T& data, BinarySearchTreeNode<T>* currNode)
+	BinarySearchTreeNode<T>* searchNodeParent(const T& data, BinarySearchTreeNode<T>* parentNode)
 	{
-		if (currNode != nullptr)
+		if (parentNode != nullptr)
 		{
-			if (currNode->getData() == data)
+			if (parentNode->getData() == data)
 			{
-				return currNode;
+				return parentNode;
 			}
-			else if (currNode->hasLeft() && data < currNode->getData())
+			else if (parentNode->hasLeft() && data < parentNode->getData())
 			{
-				return searchNode(data, currNode->getLeft());
+				if (parentNode->getLeft()->getData() == data) // TODO: this is also done in getCorrectChildFromParent. Check if std::pair is better for returning both child and parent.
+					return parentNode;
+				return searchNodeParent(data, parentNode->getLeft());
 			}
-			else if (currNode->hasRight() && data > currNode->getData())
+			else if (parentNode->hasRight() && data > parentNode->getData())
 			{
-				return searchNode(data, currNode->getRight());
+				if (parentNode->getRight()->getData() == data) // TODO: this is also done in getCorrectChildFromParent. Check if std::pair is better for returning both child and parent.
+					return parentNode;
+				return searchNodeParent(data, parentNode->getRight());
 			}
 		}
 		return nullptr;
 	}
 
-	BinarySearchTreeNode<T>* searchNode(const T& data)
+	/*
+	* Returns the parent node containing the child node (either left or right) that has the given data.
+	* If the parent itself has the data, then the parent node itself is returned.
+	*/
+	BinarySearchTreeNode<T>* searchNodeParent(const T& data)
 	{
-		return searchNode(data, root);
+		return searchNodeParent(data, root);
+	}
+
+	BinarySearchTreeNode<T>* getCorrectChildFromParent(const T& data, BinarySearchTreeNode<T>* parentNode)
+	{
+		if (parentNode != nullptr)
+		{
+			if (parentNode->hasLeft() && parentNode->getLeft()->getData() == data)
+			{
+				return parentNode->getLeft();
+			}
+			
+			if (parentNode->hasRight() && parentNode->getRight()->getData() == data)
+			{
+				return parentNode->getRight();
+			}
+		}
+		return nullptr
 	}
 
 	BinarySearchTreeNode<T>* DFS(const T& data, BinarySearchTreeNode<T>* currRoot)
@@ -214,6 +258,8 @@ public:
 	}
 
 private:
+	
+
 	BinarySearchTreeNode<T>* root;
 	size_t depth;
 };
