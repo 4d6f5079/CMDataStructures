@@ -108,17 +108,25 @@ int testingBinarySearchTree()
 	//	destructor of bst is not called.
 	try
 	{
-		BinarySearchTree<float> bst(1);
-		bst.insertNode(-2);
-		bst.insertNode(2);
-		bst.insertNode(2);
-		bst.insertNode(10);
-		bst.insertNode(4);
-		bst.insertNode(100);
-		bst.insertNode(5);
-		bst.insertNode(-1);
-		bst.insertNode(-0.5);
-		std::cout << bst.DFS(5)->getData() << std::endl;
+		BinarySearchTree<float> bst(20);
+		bst.insertNode(7);
+		bst.insertNode(93);
+		bst.insertNode(3);
+		bst.insertNode(17);
+		bst.insertNode(19);
+		bst.insertNode(53);
+		bst.insertNode(22);
+		bst.insertNode(66);
+		bst.insertNode(75);
+		bst.insertNode(67);
+		bst.insertNode(21);
+		bst.insertNode(49);
+		bst.insertNode(28);
+		//std::cout << bst.DFS(5)->getData() << std::endl;
+		bst.removeNode(93);
+		bst.removeNode(53);
+		bst.removeNode(22);
+		bst.removeNode(21);
 		bst.printTree();
 		return 0;
 	}

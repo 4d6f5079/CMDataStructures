@@ -89,7 +89,7 @@ public:
 		}
 	}
 
-	BinarySearchTreeNode<T>* findInorderSuccessor(BinarySearchTreeNode<T>* parentNode, BinarySearchTreeNode<T>* currNode)
+	std::tuple<BinarySearchTreeNode<T>*, BinarySearchTreeNode<T>*> findInorderSuccessor(BinarySearchTreeNode<T>* parentNode, BinarySearchTreeNode<T>* currNode)
 	{
 		if (currNode != nullptr)
 		{
@@ -99,10 +99,10 @@ public:
 			}
 			else
 			{
-				return currNode;
+				return std::make_tuple(parentNode, currNode);
 			}
 		}
-		return nullptr;
+		return std::make_tuple(nullptr, nullptr);
 	}
 
 	void removeNode(const T& data, BinarySearchTreeNode<T>* parentNode, BinarySearchTreeNode<T>* currNode)
@@ -153,7 +153,24 @@ public:
 			}
 			else
 			{
-				// TODO:
+				const auto parentAndSuccessorNode = findInorderSuccessor(parentNode, currNode->getRight());
+				BinarySearchTreeNode<T>* parentSuccessor = std::get<0>(parentAndSuccessorNode);
+				BinarySearchTreeNode<T>* nodeSuccessor = std::get<1>(parentAndSuccessorNode);
+				
+				if (nodeSuccessor != nullptr && nodeSuccessor == currNode->getRight())
+				{
+					nodeSuccessor->setLeft(currNode->getLeft());
+					setChildFromParent(parentNode, currNode, nodeSuccessor);
+					delete currNode;
+				}
+				else
+				{
+					parentSuccessor->setLeft(nodeSuccessor->getRight());
+					nodeSuccessor->setLeft(currNode->getLeft());
+					nodeSuccessor->setRight(currNode->getRight());
+					setChildFromParent(parentNode, currNode, nodeSuccessor);
+					delete currNode;
+				}
 			}
 		}
 	}
