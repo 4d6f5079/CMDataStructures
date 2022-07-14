@@ -89,38 +89,71 @@ public:
 		}
 	}
 
-	BinarySearchTreeNode<T>* findInorderSuccessor(BinarySearchTreeNode<T>* currNode)
+	BinarySearchTreeNode<T>* findInorderSuccessor(BinarySearchTreeNode<T>* parentNode, BinarySearchTreeNode<T>* currNode)
 	{
 		if (currNode != nullptr)
 		{
 			if (currNode->hasLeft())
 			{
-				return findInorderSuccessor(currNode->getLeft());
+				return findInorderSuccessor(currNode, currNode->getLeft());
 			}
 			else
 			{
 				return currNode;
 			}
 		}
-		else
-		{
-			return nullptr;
-		}
+		return nullptr;
 	}
 
 	void removeNode(const T& data, BinarySearchTreeNode<T>* parentNode, BinarySearchTreeNode<T>* currNode)
 	{
-		if (currNode != nullptr)
+		if (currNode == nullptr)
 		{
-			if (parentNode != nullptr)
+			return;
+		}
+
+		if (data < currNode->getData())
+		{
+			return removeNode(data, currNode, currNode->getLeft());
+		} 
+		else if (data > currNode->getData())
+		{
+			return removeNode(data, currNode, currNode->getRight());
+		}
+		else
+		{
+			// Current node contains the given data.
+			// There are 4 options for deletion:
+			//	1: currNode has no children -> let the parent point to nullptr and then delete the currNode
+			//	2: currNode has only left child -> make left child the new currNode and delete the old currNode
+			//	3: currNode has only right child -> make the parent left/right ref point to right child the currNode and delete the old currNode
+			//	4: currNode has both children:
+			//		4.1: if the direct right node of currNode does not have a left child, then:
+			//			4.1.1: make the right node the new currNode
+			//			4.1.2: make the child of new currNode the left child of old currNode
+			//			4.1.3: make parent node point to new currNode
+			//			4.1.4: delete old currNode
+			//		4.1: if the direct right node of currNode does have a left child, then search for inorder successor node by traversing to the deepest left node
+			//		4.2: make successor the new root of the tree
+			//			4.2.1: if successor has right child, make the left child of parent of the successor point to that child
+			if (!currNode->hasLeft() && !currNode->hasRight())
 			{
-				// some 
+				setChildFromParent(parentNode, currNode, nullptr);
+				delete currNode;
+			}
+			else if (!currNode->hasRight() && currNode->hasLeft())
+			{
+				setChildFromParent(parentNode, currNode, currNode->getLeft());
+				delete currNode;
+			}
+			else if (currNode->hasRight() && !currNode->hasLeft())
+			{
+				setChildFromParent(parentNode, currNode, currNode->getRight());
+				delete currNode;
 			}
 			else
 			{
-				// TODO: root needs to be removed, find inorder successor node and make the new root
-				// If no right and then left node is present, make the right node the root
-				// because there is no node that is smaller than the direct right node
+				// TODO:
 			}
 		}
 	}
@@ -177,54 +210,23 @@ public:
 		}
 	}
 
-	BinarySearchTreeNode<T>* searchNodeParent(const T& data, BinarySearchTreeNode<T>* parentNode)
+	inline void setChildFromParent(
+		BinarySearchTreeNode<T>* parentNode, 
+		BinarySearchTreeNode<T>* childToSet,
+		BinarySearchTreeNode<T>* newRefToSetTo
+	)
 	{
 		if (parentNode != nullptr)
 		{
-			if (parentNode->getData() == data)
+			if (parentNode->getLeft() == childToSet)
 			{
-				return parentNode;
+				parentNode->setLeft(newRefToSetTo);
 			}
-			else if (parentNode->hasLeft() && data < parentNode->getData())
+			else if (parentNode->getRight() == childToSet)
 			{
-				if (parentNode->getLeft()->getData() == data) // TODO: this is also done in getCorrectChildFromParent. Check if std::pair is better for returning both child and parent.
-					return parentNode;
-				return searchNodeParent(data, parentNode->getLeft());
-			}
-			else if (parentNode->hasRight() && data > parentNode->getData())
-			{
-				if (parentNode->getRight()->getData() == data) // TODO: this is also done in getCorrectChildFromParent. Check if std::pair is better for returning both child and parent.
-					return parentNode;
-				return searchNodeParent(data, parentNode->getRight());
+				parentNode->setRight(newRefToSetTo);
 			}
 		}
-		return nullptr;
-	}
-
-	/*
-	* Returns the parent node containing the child node (either left or right) that has the given data.
-	* If the parent itself has the data, then the parent node itself is returned.
-	*/
-	BinarySearchTreeNode<T>* searchNodeParent(const T& data)
-	{
-		return searchNodeParent(data, root);
-	}
-
-	BinarySearchTreeNode<T>* getCorrectChildFromParent(const T& data, BinarySearchTreeNode<T>* parentNode)
-	{
-		if (parentNode != nullptr)
-		{
-			if (parentNode->hasLeft() && parentNode->getLeft()->getData() == data)
-			{
-				return parentNode->getLeft();
-			}
-			
-			if (parentNode->hasRight() && parentNode->getRight()->getData() == data)
-			{
-				return parentNode->getRight();
-			}
-		}
-		return nullptr
 	}
 
 	BinarySearchTreeNode<T>* DFS(const T& data, BinarySearchTreeNode<T>* currRoot)
