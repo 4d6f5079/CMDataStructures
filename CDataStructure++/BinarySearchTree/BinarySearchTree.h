@@ -120,7 +120,7 @@ public:
 		return std::make_tuple(nullptr, nullptr);
 	}
 
-	void removeNode(const T& data, BinarySearchTreeNode<T>* currNode)
+	void removeNode(const T& data, BinarySearchTreeNode<T>* parentNode, BinarySearchTreeNode<T>* currNode)
 	{
 		if (currNode == nullptr)
 		{
@@ -129,11 +129,11 @@ public:
 
 		if (data < currNode->getData())
 		{
-			return removeNode(data, currNode->getLeft());
+			return removeNode(data, currNode, currNode->getLeft());
 		} 
 		else if (data > currNode->getData())
 		{
-			return removeNode(data, currNode->getRight());
+			return removeNode(data, currNode, currNode->getRight());
 		}
 		else
 		{
@@ -151,57 +151,92 @@ public:
 			//		4.2: if the direct right node of currNode does have a left child, then search for inorder successor node by traversing to the deepest left node
 			//		4.3: make successor the new root of the tree
 			//			4.3.1: if successor has right child, make the left child of parent of the successor point to that child
-			if (!currNode->hasLeft() && !currNode->hasRight())
+			if (parentNode == nullptr) // root contains the value we need to remove
 			{
-				if (currNode == root)
+				if (!currNode->hasLeft() && !currNode->hasRight())
 				{
 					delete root;
 					root = nullptr;
 				}
-				else
+				else if (!currNode->hasRight() && currNode->hasLeft())
 				{
-					//setChildFromParent(currNode, nullptr);
+					root = currNode->getLeft();
 					delete currNode;
 				}
-			}
-			else if (!currNode->hasRight() && currNode->hasLeft())
-			{
-				//setChildFromParent(currNode, currNode->getLeft());
-				delete currNode;
-			}
-			else if (currNode->hasRight() && !currNode->hasLeft())
-			{
-				//setChildFromParent(currNode, currNode->getRight());
-				delete currNode;
+				else if (currNode->hasRight() && !currNode->hasLeft())
+				{
+					root = currNode->getRight();
+					delete currNode;
+				}
+				else
+				{
+					const auto parentAndSuccessorNode = findInorderSuccessor(currNode);
+					BinarySearchTreeNode<T>* parentSuccessor = std::get<0>(parentAndSuccessorNode);
+					BinarySearchTreeNode<T>* nodeSuccessor = std::get<1>(parentAndSuccessorNode);
+
+					if (nodeSuccessor == currNode->getRight()) // successor node is the direct right node from the root
+					{
+						nodeSuccessor->setLeft(root->getLeft());
+						root = nodeSuccessor;
+						delete currNode;
+					}
+					else // successor node is somewhere in the tree
+					{
+						parentSuccessor->setLeft(nodeSuccessor->getRight());
+						nodeSuccessor->setLeft(root->getLeft());
+						nodeSuccessor->setRight(root->getRight());
+						root = nodeSuccessor;
+						delete currNode;
+					}
+				}
 			}
 			else
 			{
-				const auto parentAndSuccessorNode = findInorderSuccessor(currNode);
-				BinarySearchTreeNode<T>* parentSuccessor = std::get<0>(parentAndSuccessorNode);
-				BinarySearchTreeNode<T>* nodeSuccessor = std::get<1>(parentAndSuccessorNode);
-				
-				if (nodeSuccessor == currNode->getRight())
+				if (!currNode->hasLeft() && !currNode->hasRight())
 				{
-					nodeSuccessor->setLeft(currNode->getLeft());
-					//setChildFromParent(currNode, nodeSuccessor);
+					setChildFromParent(parentNode, currNode, nullptr);
+					delete currNode;
+				}
+				else if (!currNode->hasRight() && currNode->hasLeft())
+				{
+					setChildFromParent(parentNode, currNode, currNode->getLeft());
+					delete currNode;
+				}
+				else if (currNode->hasRight() && !currNode->hasLeft())
+				{
+					setChildFromParent(parentNode, currNode, currNode->getRight());
 					delete currNode;
 				}
 				else
 				{
-					parentSuccessor->setLeft(nodeSuccessor->getRight());
-					nodeSuccessor->setLeft(currNode->getLeft());
-					nodeSuccessor->setRight(currNode->getRight());
-					//setChildFromParent(currNode, nodeSuccessor);
-					delete currNode;
+					const auto parentAndSuccessorNode = findInorderSuccessor(currNode);
+					BinarySearchTreeNode<T>* parentSuccessor = std::get<0>(parentAndSuccessorNode);
+					BinarySearchTreeNode<T>* nodeSuccessor = std::get<1>(parentAndSuccessorNode);
+
+					if (nodeSuccessor == currNode->getRight())
+					{
+						nodeSuccessor->setLeft(currNode->getLeft());
+						setChildFromParent(parentNode, currNode, nodeSuccessor);
+						delete currNode;
+					}
+					else
+					{
+						parentSuccessor->setLeft(nodeSuccessor->getRight());
+						nodeSuccessor->setLeft(currNode->getLeft());
+						nodeSuccessor->setRight(currNode->getRight());
+						setChildFromParent(parentNode, currNode, nodeSuccessor);
+						delete currNode;
+					}
 				}
 			}
+			
 			currNode = nullptr;
 		}
 	}
 
 	void removeNode(const T& data)
 	{
-		return removeNode(data, root);
+		return removeNode(data, nullptr, root);
 	}
 
 	void insertNode(const T& data)
