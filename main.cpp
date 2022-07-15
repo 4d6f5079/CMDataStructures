@@ -108,26 +108,31 @@ int testingBinarySearchTree()
 	//	destructor of bst is not called.
 	try
 	{
-		BinarySearchTree<float> bst(20);
-		bst.insertNode(7);
-		bst.insertNode(93);
-		bst.insertNode(3);
-		bst.insertNode(17);
-		bst.insertNode(19);
-		bst.insertNode(53);
+		BinarySearchTree<float> bst;
 		bst.insertNode(22);
-		bst.insertNode(66);
-		bst.insertNode(75);
-		bst.insertNode(67);
-		bst.insertNode(21);
-		bst.insertNode(49);
-		bst.insertNode(28);
+		bst.insertNode(13);
+		bst.insertNode(46);
+		bst.insertNode(37);
+		bst.insertNode(32);
+		bst.insertNode(82);
+		bst.insertNode(94);
+		bst.insertNode(95);
+		bst.insertNode(86);
+		bst.insertNode(79);
+		bst.insertNode(59);
+		bst.insertNode(76);
+		bst.insertNode(47);
+		bst.insertNode(48);
+		bst.insertNode(54);
 		//std::cout << bst.DFS(5)->getData() << std::endl;
-		bst.removeNode(93);
-		bst.removeNode(53);
-		bst.removeNode(22);
-		bst.removeNode(21);
+		std::cout << "removing leaf node case 1: \n";
+		bst.removeNode(54);
 		bst.printTree();
+		std::cout << "\n\nremoving root node case 2: \n";
+		bst.removeNode(22);
+		bst.printTree();
+		//std::cout << "\n\nremoving root node case 3: \n";
+		//bst.printTree();
 		return 0;
 	}
 	catch (const std::exception&)
