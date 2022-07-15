@@ -14,6 +14,28 @@ public:
 
 	BinarySearchTreeNode(
 		const T& data,
+		BinarySearchTreeNode* left
+	)
+		:
+		data(data),
+		left(left),
+		right(nullptr)
+	{
+	}
+
+	BinarySearchTreeNode(
+		const T& data,
+		BinarySearchTreeNode* right
+	)
+		:
+		data(data),
+		left(nullptr),
+		right(right)
+	{
+	}
+
+	BinarySearchTreeNode(
+		const T& data,
 		BinarySearchTreeNode* left,
 		BinarySearchTreeNode* right
 	)

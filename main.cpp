@@ -123,6 +123,8 @@ int testingBinarySearchTree()
 		bst.insertNode(48);
 		bst.insertNode(54);
 		//std::cout << bst.DFS(5)->getData() << std::endl;
+		std::cout << "Original Tree: \n";
+		bst.printTree();
 		std::cout << "removing leaf node case 1: \n";
 		bst.removeNode(54);
 		bst.printTree();
