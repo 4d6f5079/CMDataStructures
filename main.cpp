@@ -104,8 +104,6 @@ int testingHashTableWithBenchmark()
 
 int testingBinarySearchTree()
 {
-	// TODO: this causes memory leak in case of an exception
-	//	destructor of bst is not called.
 	try
 	{
 		BinarySearchTree<float> bst;
