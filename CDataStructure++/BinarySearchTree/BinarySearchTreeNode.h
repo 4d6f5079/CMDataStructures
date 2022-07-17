@@ -4,40 +4,10 @@ template<typename T>
 class BinarySearchTreeNode
 {
 public:
-	BinarySearchTreeNode(const T& data)
-		:
-		data(data),
-		left(nullptr),
-		right(nullptr)
-	{
-	}
-
-	BinarySearchTreeNode(
+	explicit BinarySearchTreeNode(
 		const T& data,
-		BinarySearchTreeNode* left
-	)
-		:
-		data(data),
-		left(left),
-		right(nullptr)
-	{
-	}
-
-	BinarySearchTreeNode(
-		const T& data,
-		BinarySearchTreeNode* right
-	)
-		:
-		data(data),
-		left(nullptr),
-		right(right)
-	{
-	}
-
-	BinarySearchTreeNode(
-		const T& data,
-		BinarySearchTreeNode* left,
-		BinarySearchTreeNode* right
+		BinarySearchTreeNode* left = nullptr,
+		BinarySearchTreeNode* right = nullptr
 	)
 		:
 		data(data),

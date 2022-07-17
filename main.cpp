@@ -1,14 +1,14 @@
-#include "CDataStructure++/HashTable/HashTable.h"
-#include "CDataStructure++/LinkedList/LinkedList.h"
-#include "CDataStructure++/Timer/Timer.h"
-#include "CDataStructure++/BinarySearchTree/BinarySearchTree.h"
+#include <HashTable.h>
+#include <LinkedList.h>
+#include <Timer.h>
+#include <BinarySearchTree.h>
 #include <random>
 #include <iostream>
 #include <functional>
 #include <algorithm>
 #include <exception>
 
-std::string randomStrGen(size_t length, size_t rndNum)
+static const std::string randomStrGen(const size_t& length, const size_t& rndNum)
 {
 	const static std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 	std::string result;
@@ -143,7 +143,6 @@ int testingBinarySearchTree()
 
 int main(int argc, char* argv[])
 {	
-	//testingHashTableWithBenchmark();
-	testingBinarySearchTree();
-	system("PAUSE");
+	//return testingHashTableWithBenchmark();
+	return testingBinarySearchTree();
 }

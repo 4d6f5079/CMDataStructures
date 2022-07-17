@@ -57,11 +57,11 @@ add_library (
 )
 
 # Including the folder where the header files are located of each added library to let cmake know where to find .h files
-# COMMENTED OUT SINCE CMAKE ALREADY SEES THE DIFFERENT FOLDERS AS SEPARATE SUB-DIRS AND CREATES THEM FOR US
-#target_include_directories (libbst PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/BinarySearchTree)
-#target_include_directories (libht PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/HashTable)
-#target_include_directories (libll PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/LinkedList)
-#target_include_directories (libtimer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/Timer)
+# This makes it possible to include the header files / libraries without giving the full relative path
+target_include_directories (libbst PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/BinarySearchTree)
+target_include_directories (libht PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/HashTable)
+target_include_directories (libll PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/LinkedList)
+target_include_directories (libtimer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/Timer)
 
 # Add source to this project's executable.
 add_executable (${PROJECT_NAME} main.cpp)
