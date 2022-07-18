@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 
 template<typename T>
 class AVLNode
@@ -88,5 +89,5 @@ private:
 	const T data; // data present in the node
 	AVLNode* left; // pointer to left node
 	AVLNode* right; // pointer to right node
-	size_t height; // height 
+	std::size_t height; // height 
 };
