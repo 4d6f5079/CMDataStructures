@@ -10,69 +10,29 @@ class BinarySearchTree
 public:
 	BinarySearchTree()
 		:
-		root(nullptr),
-		depth(0)
+		root(nullptr)
 	{
 	}
-
-	//BinaryTree(BinaryTreeNode<T>* root)
+	
+	//BinarySearchTree(BinarySearchTreeNode<T>* const root)
 	//	:
-	//	root(root),
-	//	depth(1)
-	//{	
+	//	root(root)
+	//{
 	//}
 
 	BinarySearchTree(const T& data)
 		:
-		root(new BinarySearchTreeNode<T>(data)),
-		depth(1)
+		root(new BinarySearchTreeNode<T>(data))
 	{
 	}
+
+	// Delete constructors which may cause headache and bugs
+	BinarySearchTree(const BinarySearchTree<T>&) = delete;
+	BinarySearchTree(BinarySearchTree<T>&&) = delete;
 
 	~BinarySearchTree()
 	{
 		cleanUpTree(root);
-		depth = -1;
-	}
-
-	void cleanUpTree(BinarySearchTreeNode<T>* currNode)
-	{
-		// Post-order traversal to delete and free up memory taken by each node.
-		// First the left three and right tree are visited and deleted first and then the current node is deleted so 
-		// that everything descendent node is deleted first before deleting the current node to not lose reference
-		// and cause memory leaks.
-		if (currNode != nullptr)
-		{
-			if (currNode->hasLeft())
-			{
-				cleanUpTree(currNode->getLeft());
-			}
-
-			if (currNode->hasRight())
-			{
-				cleanUpTree(currNode->getRight());
-			}
-
-			delete currNode;
-		}
-	}
-
-	// from https://stackoverflow.com/questions/36802354/print-binary-tree-in-a-pretty-way-using-c
-	void printTree(const std::string& prefix, BinarySearchTreeNode<T>* node, bool isLeft)
-	{
-		if (node != nullptr)
-		{
-			std::cout << prefix;
-
-			std::cout << (isLeft ? "|-- " : "\\-- ");
-
-			// print the value of the node
-			std::cout << "(" << node->getData() << ")" << std::endl;
-
-			// enter the next tree level - left and right branch
-			printTree(prefix + (isLeft ? "|   " : "    "), node->getLeft(), true);
-			printTree(prefix + (isLeft ? "|   " : "    "), node->getRight(), false);
-		}
 	}
 
 	void printTree(BinarySearchTreeNode<T>* node = nullptr)
@@ -91,28 +51,9 @@ public:
 		}
 	}
 
-	inline std::tuple<BinarySearchTreeNode<T>*, BinarySearchTreeNode<T>*> findInorderSuccessorHelper(
-		BinarySearchTreeNode<T>* parentNode, 
-		BinarySearchTreeNode<T>* currNode
-	)
-	{
-		if (currNode != nullptr)
-		{
-			if (currNode->hasLeft())
-			{
-				return findInorderSuccessorHelper(currNode, currNode->getLeft());
-			}
-			else
-			{
-				return std::make_tuple(parentNode, currNode);
-			}
-		}
-		return std::make_tuple(nullptr, nullptr);
-	}
-
-	inline std::tuple<BinarySearchTreeNode<T>*, BinarySearchTreeNode<T>*> findInorderSuccessor(
-		BinarySearchTreeNode<T>* currNode
-	)
+	inline 
+	std::tuple<BinarySearchTreeNode<T>*, BinarySearchTreeNode<T>*> 
+	findInorderSuccessor(BinarySearchTreeNode<T>* currNode)
 	{
 		if (currNode->hasRight())
 		{
@@ -242,12 +183,10 @@ public:
 
 	void insertNode(const T& data)
 	{
-		const auto toAddNode = new BinarySearchTreeNode<T>(data);
-
 		// if root is not pointing to a node yet, then just add the toAddNode as root.
 		if (root == nullptr)
 		{
-			root = toAddNode;
+			root = new BinarySearchTreeNode<T>(data);
 		}
 		else
 		{
@@ -262,7 +201,7 @@ public:
 					}
 					else
 					{
-						currNode->setLeft(toAddNode);
+						currNode->setLeft(new BinarySearchTreeNode<T>(data));
 						return;
 					}						
 				}
@@ -274,7 +213,7 @@ public:
 					}
 					else
 					{
-						currNode->setRight(toAddNode);
+						currNode->setRight(new BinarySearchTreeNode<T>(data));
 						return;
 					}
 				}
@@ -283,25 +222,6 @@ public:
 					// don't add a node with the same data value twice, just return
 					return;
 				}
-			}
-		}
-	}
-
-	inline void setChildFromParent(
-		BinarySearchTreeNode<T>* parentNode, 
-		BinarySearchTreeNode<T>* childToSet,
-		BinarySearchTreeNode<T>* newRefToSetTo
-	)
-	{
-		if (parentNode != nullptr)
-		{
-			if (parentNode->getLeft() == childToSet)
-			{
-				parentNode->setLeft(newRefToSetTo);
-			}
-			else if (parentNode->getRight() == childToSet)
-			{
-				parentNode->setRight(newRefToSetTo);
 			}
 		}
 	}
@@ -337,8 +257,84 @@ public:
 	}
 
 private:
-	
+	// from https://stackoverflow.com/questions/36802354/print-binary-tree-in-a-pretty-way-using-c
+	void printTree(const std::string& prefix, BinarySearchTreeNode<T>* node, bool isLeft)
+	{
+		if (node != nullptr)
+		{
+			std::cout << prefix;
 
+			std::cout << (isLeft ? "|-- " : "\\-- ");
+
+			// print the value of the node
+			std::cout << "(" << node->getData() << ")" << std::endl;
+
+			// enter the next tree level - left and right branch
+			printTree(prefix + (isLeft ? "|   " : "    "), node->getLeft(), true);
+			printTree(prefix + (isLeft ? "|   " : "    "), node->getRight(), false);
+		}
+	}
+
+	inline std::tuple<BinarySearchTreeNode<T>*, BinarySearchTreeNode<T>*> findInorderSuccessorHelper(
+		BinarySearchTreeNode<T>* parentNode,
+		BinarySearchTreeNode<T>* currNode
+	)
+	{
+		if (currNode != nullptr)
+		{
+			if (currNode->hasLeft())
+			{
+				return findInorderSuccessorHelper(currNode, currNode->getLeft());
+			}
+			else
+			{
+				return std::make_tuple(parentNode, currNode);
+			}
+		}
+		return std::make_tuple(nullptr, nullptr);
+	}
+
+	inline void setChildFromParent(
+		BinarySearchTreeNode<T>* parentNode,
+		BinarySearchTreeNode<T>* childToSet,
+		BinarySearchTreeNode<T>* newRefToSetTo
+	)
+	{
+		if (parentNode != nullptr)
+		{
+			if (parentNode->getLeft() == childToSet)
+			{
+				parentNode->setLeft(newRefToSetTo);
+			}
+			else if (parentNode->getRight() == childToSet)
+			{
+				parentNode->setRight(newRefToSetTo);
+			}
+		}
+	}
+	
+	void cleanUpTree(BinarySearchTreeNode<T>* currNode)
+	{
+		// Post-order traversal to delete and free up memory taken by each node.
+		// First the left three and right tree are visited and deleted first and then the current node is deleted so 
+		// that everything descendent node is deleted first before deleting the current node to not lose reference
+		// and cause memory leaks.
+		if (currNode != nullptr)
+		{
+			if (currNode->hasLeft())
+			{
+				cleanUpTree(currNode->getLeft());
+			}
+
+			if (currNode->hasRight())
+			{
+				cleanUpTree(currNode->getRight());
+			}
+
+			delete currNode;
+		}
+	}
+
+private:
 	BinarySearchTreeNode<T>* root;
-	size_t depth;
 };

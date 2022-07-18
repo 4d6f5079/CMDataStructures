@@ -6,6 +6,10 @@ cmake_minimum_required (VERSION 3.8)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Here FLAGS can be given to compiler when building in Debug/Release mode
+#set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
+#set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
+
 project (CDataStructure++ VERSION 1.0)
 
 # Include sub-projects.
@@ -56,12 +60,24 @@ add_library (
 	${LIB_TIMER_HPPS}
 )
 
+file(GLOB LIB_AVL_TREE_CPPS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/AVLTree/*.cpp)
+file(GLOB LIB_AVL_TREE_HS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/AVLTree/*.h)
+file(GLOB LIB_AVL_TREE_HPPS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/AVLTree/*.hpp)
+add_library (
+	libavl 
+	STATIC 
+	${LIB_AVL_TREE_CPPS}
+	${LIB_AVL_TREE_HS}
+	${LIB_AVL_TREE_HPPS}
+)
+
 # Including the folder where the header files are located of each added library to let cmake know where to find .h files
 # This makes it possible to include the header files / libraries without giving the full relative path
 target_include_directories (libbst PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/BinarySearchTree)
 target_include_directories (libht PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/HashTable)
 target_include_directories (libll PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/LinkedList)
 target_include_directories (libtimer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/Timer)
+target_include_directories (libavl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/AVLTree)
 
 # Add source to this project's executable.
 add_executable (${PROJECT_NAME} main.cpp)
@@ -71,3 +87,4 @@ target_link_libraries(${PROJECT_NAME} PUBLIC libbst)
 target_link_libraries(${PROJECT_NAME} PUBLIC libht)
 target_link_libraries(${PROJECT_NAME} PUBLIC libll)
 target_link_libraries(${PROJECT_NAME} PUBLIC libtimer)
+target_link_libraries(${PROJECT_NAME} PUBLIC libavl)

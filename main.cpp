@@ -2,13 +2,15 @@
 #include <LinkedList.h>
 #include <Timer.h>
 #include <BinarySearchTree.h>
+#include <AVLTree.h>
 #include <random>
 #include <iostream>
 #include <functional>
 #include <algorithm>
 #include <exception>
+#include <AVLNode.h>
 
-static const std::string randomStrGen(const size_t& length, const size_t& rndNum)
+const std::string randomStrGen(const size_t& length, const size_t& rndNum)
 {
 	const static std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 	std::string result;
@@ -75,6 +77,7 @@ int testingHashTableWithBenchmark()
 		rndStrs.reserve(LOOP_ITERATIONS_POPULATION);
 		rndVals.clear();
 		rndVals.reserve(LOOP_ITERATIONS_POPULATION);
+
 		for (size_t i = 0; i < LOOP_ITERATIONS_POPULATION; ++i)
 		{
 			rndStrs.emplace_back(getRandomString(RND_STIRNGS_LEN, roll_dice()));
@@ -145,4 +148,9 @@ int main(int argc, char* argv[])
 {	
 	//return testingHashTableWithBenchmark();
 	return testingBinarySearchTree();
+	//AVLTree<int> t(2);
+	//t.insertNode(99);
+	//t.printTree();
+	//std::cout <<  (t.getRoot()->getBf()) << std::endl;
+	//AVLNode<int> newNode(1);
 }
