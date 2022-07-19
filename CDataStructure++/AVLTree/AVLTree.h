@@ -1,6 +1,6 @@
 #pragma once
 #include <AVLNode.h>
-#include "../BinarySearchTree/BinarySearchTree.h"
+#include <BinarySearchTree.h>
 
 template<typename T>
 class AVLTree
@@ -66,6 +66,11 @@ public:
 	)
 	{
 
+	}
+
+	AVLNode<T>* rotateLeft(AVLNode<T>* parentNode, AVLNode<T>* currNode)
+	{
+		// TODO:
 	}
 
 	/* 

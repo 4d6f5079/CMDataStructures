@@ -15,10 +15,10 @@ public:
 		data(data),
 		left(left),
 		right(right),
-		bf(0) // each node inserted starts off with balance factor of 0 since it is a leaf node (no left or right trees available yet)
+		height(0) // each node inserted starts off with balance factor of 0 since it is a leaf node (no left or right trees available yet)
 	{
 	}
-
+	
 	~AVLNode()
 	{
 		if (!left)

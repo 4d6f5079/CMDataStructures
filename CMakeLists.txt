@@ -16,9 +16,9 @@ project (CDataStructure++ VERSION 1.0)
 #add_subdirectory (${PROJECT_NAME})
 
 # Add libraries of different implemented data structure implementation cpp and h/hpp files
-file(GLOB LIB_BST_CPPS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/BinarySearchTree/*.cpp)
-file(GLOB LIB_BST_HS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/BinarySearchTree/*.h)
-file(GLOB LIB_BST_HPPS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/BinarySearchTree/*.hpp)
+file(GLOB LIB_BST_CPPS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/BinarySearchTree/*.cpp)
+file(GLOB LIB_BST_HS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/BinarySearchTree/*.h)
+file(GLOB LIB_BST_HPPS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/BinarySearchTree/*.hpp)
 add_library (
 	libbst 
 	STATIC 
@@ -27,9 +27,10 @@ add_library (
 	${LIB_BST_HPPS}
 )
 
-file(GLOB LIB_HT_CPPS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/HashTable/*.cpp)
-file(GLOB LIB_HT_HS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/HashTable/*.h)
-file(GLOB LIB_HT_HPPS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/HashTable/*.hpp)
+
+file(GLOB LIB_HT_CPPS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/HashTable/*.cpp)
+file(GLOB LIB_HT_HS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/HashTable/*.h)
+file(GLOB LIB_HT_HPPS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/HashTable/*.hpp)
 add_library (
 	libht 
 	STATIC 
@@ -38,9 +39,9 @@ add_library (
 	${LIB_HT_HPPS}
 )
 
-file(GLOB LIB_LL_CPPS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/LinkedList/*.cpp)
-file(GLOB LIB_LL_HS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/LinkedList/*.h)
-file(GLOB LIB_LL_HPPS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/LinkedList/*.hpp)
+file(GLOB LIB_LL_CPPS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/LinkedList/*.cpp)
+file(GLOB LIB_LL_HS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/LinkedList/*.h)
+file(GLOB LIB_LL_HPPS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/LinkedList/*.hpp)
 add_library (
 	libll 
 	STATIC 
@@ -49,9 +50,9 @@ add_library (
 	${LIB_LL_HPPS}
 )
 
-file(GLOB LIB_TIMER_CPPS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/Timer/*.cpp)
-file(GLOB LIB_TIMER_HS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/Timer/*.h)
-file(GLOB LIB_TIMER_HPPS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/Timer/*.hpp)
+file(GLOB LIB_TIMER_CPPS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/Timer/*.cpp)
+file(GLOB LIB_TIMER_HS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/Timer/*.h)
+file(GLOB LIB_TIMER_HPPS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/Timer/*.hpp)
 add_library (
 	libtimer 
 	STATIC 
@@ -60,9 +61,9 @@ add_library (
 	${LIB_TIMER_HPPS}
 )
 
-file(GLOB LIB_AVL_TREE_CPPS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/AVLTree/*.cpp)
-file(GLOB LIB_AVL_TREE_HS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/AVLTree/*.h)
-file(GLOB LIB_AVL_TREE_HPPS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/AVLTree/*.hpp)
+file(GLOB LIB_AVL_TREE_CPPS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/AVLTree/*.cpp)
+file(GLOB LIB_AVL_TREE_HS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/AVLTree/*.h)
+file(GLOB LIB_AVL_TREE_HPPS ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/AVLTree/*.hpp)
 add_library (
 	libavl 
 	STATIC 
@@ -73,18 +74,19 @@ add_library (
 
 # Including the folder where the header files are located of each added library to let cmake know where to find .h files
 # This makes it possible to include the header files / libraries without giving the full relative path
-target_include_directories (libbst PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/BinarySearchTree)
-target_include_directories (libht PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/HashTable)
-target_include_directories (libll PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/LinkedList)
-target_include_directories (libtimer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/Timer)
-target_include_directories (libavl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/AVLTree)
+target_include_directories (libbst PUBLIC ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/BinarySearchTree)
+target_include_directories (libht PUBLIC ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/HashTable)
+target_include_directories (libll PUBLIC ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/LinkedList)
+target_include_directories (libtimer PUBLIC ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/Timer)
+target_include_directories (libavl PUBLIC ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/AVLTree)
 
 # Add source to this project's executable.
-add_executable (${PROJECT_NAME} main.cpp)
+add_executable (app main.cpp)
 
 # Link the libraries with the executable
-target_link_libraries(${PROJECT_NAME} PUBLIC libbst)
-target_link_libraries(${PROJECT_NAME} PUBLIC libht)
-target_link_libraries(${PROJECT_NAME} PUBLIC libll)
-target_link_libraries(${PROJECT_NAME} PUBLIC libtimer)
-target_link_libraries(${PROJECT_NAME} PUBLIC libavl)
+target_link_libraries(app PUBLIC libbst)
+target_link_libraries(app PUBLIC libht)
+target_link_libraries(app PUBLIC libll)
+target_link_libraries(app PUBLIC libtimer)
+target_link_libraries(app PUBLIC libavl)
+target_link_libraries(libavl PUBLIC libbst)
