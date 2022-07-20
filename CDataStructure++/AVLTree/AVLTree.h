@@ -98,38 +98,30 @@ public:
 		std::size_t height
 	)
 	{
-		// if root is not pointing to a node yet, then just add the new data node as root.
-		if (root == nullptr)
+		if (currNode != nullptr)
 		{
-			root = new AVLNode<T>(data);
-		}
-		else
-		{
-			if (currNode != nullptr)
+			if (data < currNode->getData())
 			{
-				if (data < currNode->getData())
+				if (currNode->hasLeft())
 				{
-					if (currNode->hasLeft())
-					{
-						return insertNode(data, currNode, currNode->getLeft(), height + 1);
-					}
-					else
-					{
-						currNode->setLeft(new AVLNode<T>(data, parentNode, height));
-						return currNode->getLeft();
-					}
+					return insertNode(data, currNode, currNode->getLeft(), height + 1);
 				}
-				else if (data > currNode->getData())
+				else
 				{
-					if (currNode->hasRight())
-					{
-						return insertNode(data, currNode, currNode->getRight(), height + 1);
-					}
-					else
-					{
-						currNode->setRight(new AVLNode<T>(data, parentNode, height));
-						return currNode->getRight();
-					}
+					currNode->setLeft(new AVLNode<T>(data, currNode, height + 1));
+					return currNode->getLeft();
+				}
+			}
+			else if (data > currNode->getData())
+			{
+				if (currNode->hasRight())
+				{
+					return insertNode(data, currNode, currNode->getRight(), height + 1);
+				}
+				else
+				{
+					currNode->setRight(new AVLNode<T>(data, currNode, height + 1));
+					return currNode->getRight();
 				}
 			}
 		}
@@ -140,14 +132,39 @@ public:
 	void insertNode(const T& data)
 	{
 		AVLNode<T>* insertedNodeRef = nullptr;
+
+		// if root is not pointing to a node yet, then just add the new data node as root.
 		if (root == nullptr)
 		{
-			insertedNodeRef = insertNode(data, nullptr, root, 0);
+			root = new AVLNode<T>(data);
+			insertedNodeRef = root;
 		}
 		else
 		{
-			insertedNodeRef = insertNode(data, root, root, 1);
+			if (data < root->getData())
+			{
+				if (root->hasLeft())
+				{
+					insertedNodeRef = insertNode(data, root, root->getLeft(), 1);
+				}
+				else
+				{
+					root->setLeft(new AVLNode<T>(data, root, 1));
+				}
+			}
+			else if (data > root->getData())
+			{
+				if (root->hasRight())
+				{
+					insertedNodeRef = insertNode(data, root, root->getRight(), 1);
+				}
+				else
+				{
+					root->setRight(new AVLNode<T>(data, root, 1));
+				}
+			}
 		}
+
 		rebalanceTree(insertedNodeRef);
 	}
 

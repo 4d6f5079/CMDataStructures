@@ -143,6 +143,7 @@ public:
 		std::cout << "|                      |\n";
 		std::cout << "|          " << data << "            |\n";
 		std::cout << "|           (" << height << ")           |\n";
+		std::cout << "|           (" << this << ")           |\n";
 		std::cout << "\\                      \\\n";
 		std::cout << " ----------------------\n";
 		if (left)
