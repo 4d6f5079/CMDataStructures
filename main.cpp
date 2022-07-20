@@ -148,9 +148,15 @@ int main(int argc, char* argv[])
 {	
 	//return testingHashTableWithBenchmark();
 	//return testingBinarySearchTree();
-	AVLTree<int> t(2);
+	AVLTree<int> t;
 	t.insertNode(99);
+	t.insertNode(70);
+	t.insertNode(101);
+	t.insertNode(102);
+	t.DFS(102)->printNode();
+	t.DFS(99)->printNode();
+	t.DFS(101)->printNode();
 	t.printTree();
-	//std::cout <<  (t.getRoot()->getBf()) << std::endl;
+	std::cout <<  t.getRoot() << std::endl;
 	//AVLNode<int> newNode(1);
 }
