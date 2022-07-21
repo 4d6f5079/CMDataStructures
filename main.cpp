@@ -152,6 +152,7 @@ int main(int argc, char* argv[])
 	t.insertNode(99);
 	t.insertNode(70);
 	t.insertNode(60);
+	t.insertNode(77);
 	t.insertNode(100); 
 	t.insertNode(101);
 	t.insertNode(102);
@@ -159,6 +160,7 @@ int main(int argc, char* argv[])
 	t.DFS(99)->printNode();
 	t.DFS(70)->printNode();
 	t.DFS(60)->printNode();
+	t.DFS(77)->printNode();
 	t.DFS(100)->printNode();
 	t.DFS(101)->printNode();
 	t.DFS(102)->printNode();

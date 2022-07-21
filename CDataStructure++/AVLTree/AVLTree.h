@@ -98,7 +98,12 @@ public:
 		std::size_t height
 	)
 	{
-		if (currNode != nullptr)
+		if (root == nullptr)
+		{
+			root = new AVLNode<T>(data);
+			return root;
+		} 
+		else if (currNode != nullptr)
 		{
 			if (data < currNode->getData())
 			{
@@ -131,40 +136,7 @@ public:
 
 	void insertNode(const T& data)
 	{
-		AVLNode<T>* insertedNodeRef = nullptr;
-
-		// if root is not pointing to a node yet, then just add the new data node as root.
-		if (root == nullptr)
-		{
-			root = new AVLNode<T>(data);
-			insertedNodeRef = root;
-		}
-		else
-		{
-			if (data < root->getData())
-			{
-				if (root->hasLeft())
-				{
-					insertedNodeRef = insertNode(data, root, root->getLeft(), 1);
-				}
-				else
-				{
-					root->setLeft(new AVLNode<T>(data, root, 1));
-				}
-			}
-			else if (data > root->getData())
-			{
-				if (root->hasRight())
-				{
-					insertedNodeRef = insertNode(data, root, root->getRight(), 1);
-				}
-				else
-				{
-					root->setRight(new AVLNode<T>(data, root, 1));
-				}
-			}
-		}
-
+		const auto insertedNodeRef = insertNode(data, nullptr, root, 0);
 		rebalanceTree(insertedNodeRef);
 	}
 
