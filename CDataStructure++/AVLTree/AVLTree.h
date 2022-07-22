@@ -50,7 +50,7 @@ public:
 		AVLNode<T>* currNode
 	)
 	{
-
+		// TODO:
 	}
 
 	/*
@@ -62,6 +62,10 @@ public:
 		rebalanceTree(parentRemovedNodeRef);
 	}
 
+	/*
+	* ROTATE LEFT CASE:
+	*	<currNode> is a left child of its parent <parentNode> and BF(<currNode>) <= 0
+	*/
 	AVLNode<T>* rotateLeft(AVLNode<T>* parentNode, AVLNode<T>* currNode)
 	{
 		// currNode is by 2 higher than its sibling
@@ -78,7 +82,7 @@ public:
 
 		// 1st case, BF(current node) == 0,
 		//   only happens with deletion, not insertion:
-		if (parentNode->getBf() == 0)
+		if (currNode->getBf() == 0)
 		{
 			// t23 has been of same height as t4
 			parentNode->setBf(1);   // t23 now higher
@@ -93,6 +97,10 @@ public:
 		return currNode; // return new root of rotated subtree
 	}
 
+	/*
+	* ROTATE RIGHT CASE: 
+	*	<currNode> is a right child of its parent <parentNode> and BF(<currNode>) >= 0
+	*/
 	AVLNode<T>* rotateRight(AVLNode<T>* parentNode, AVLNode<T>* currNode)
 	{
 		// currNode is by 2 higher than its sibling
@@ -109,7 +117,7 @@ public:
 
 		// 1st case, BF(current node) == 0,
 		//   only happens with deletion, not insertion:
-		if (parentNode->getBf() == 0)
+		if (currNode->getBf() == 0)
 		{
 			// t23 has been of same height as t4
 			parentNode->setBf(1);   // t23 now higher
@@ -122,6 +130,12 @@ public:
 		}
 
 		return currNode; // return new root of rotated subtree
+	}
+
+	AVLNode<T>* rotateLeftLeft()
+	{
+		// TODO: rotate left twice
+		return nullptr;
 	}
 
 	AVLNode<T>* insertNode(
