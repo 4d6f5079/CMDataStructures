@@ -15,18 +15,18 @@ public:
 		left(nullptr),
 		right(nullptr),
 		parent(nullptr),
-		height(0) // each node inserted starts off with balance factor of 0 since it is a leaf node (no left or right trees available yet)
+		bf(0) // each node inserted starts off with balance factor of 0 since it is a leaf node (no left or right trees available yet)
 	{
 	}
 
 	explicit AVLNode(
 		const T& data,
 		AVLNode* parent,
-		std::size_t height
+		signed char bf
 	)
 		:
 		data(data),
-		height(height),
+		bf(bf),
 		parent(parent),
 		left(nullptr),
 		right(nullptr)
@@ -44,27 +44,27 @@ public:
 			parent = nullptr;
 	}
 
-	const std::size_t getHeight() const
+	const signed char getBf() const
 	{
-		return height;
+		return bf;
 	}
 
-	void setLeft(AVLNode* newLeft)
+	void setLeft(const AVLNode* newLeft)
 	{
 		this->left = newLeft;
 	}
 	
-	void setRight(AVLNode* newRight)
+	void setRight(const AVLNode* newRight)
 	{
 		this->right = newRight;
 	}
 
-	void setParent(AVLNode* newParent)
+	void setParent(const AVLNode* newParent)
 	{
 		this->parent = newParent;
 	}
 
-	void setHeight(std::size_t newHeight)
+	void setBf(const signed char newHeight)
 	{
 		this->height = newHeight;
 	}
@@ -141,9 +141,9 @@ public:
 		std::cout << " ----------------------\n";
 		std::cout << "/                      /\n";
 		std::cout << "|                      |\n";
-		std::cout << "|          " << data << "            |\n";
-		std::cout << "|           (" << height << ")           |\n";
-		std::cout << "|      (" << this << ")       |\n";
+		std::cout << "|         " << data << "          |\n";
+		std::cout << "|          (bf: " << bf << ")        |\n";
+		std::cout << "|     (addr: " << this << ")     |\n";
 		std::cout << "\\                      \\\n";
 		std::cout << " ----------------------\n";
 		if (left)
@@ -161,5 +161,5 @@ private:
 	AVLNode* left; // pointer to left node
 	AVLNode* right; // pointer to right node
 	AVLNode* parent; // pointer to parent node
-	std::size_t height; // height 
+	signed char bf; // balance factor of current node 
 };

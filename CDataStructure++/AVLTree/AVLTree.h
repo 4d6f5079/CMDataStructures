@@ -65,30 +65,63 @@ public:
 	AVLNode<T>* rotateLeft(AVLNode<T>* parentNode, AVLNode<T>* currNode)
 	{
 		// currNode is by 2 higher than its sibling
-		const auto innerChild = currNode->getLeft(); // Inner child of currNode
+		AVLNode<T>* innerChild = currNode->getLeft(); // Inner child of currNode
 		parentNode->setRight(innerChild);
+
 		if (innerChild != nullptr)
-		//	parent(t23) = X;
-		//left_child(Z) = X;
-		//parent(X) = Z;
-		//// 1st case, BF(Z) == 0,
-		////   only happens with deletion, not insertion:
-		//if (BF(Z) == 0)
-		//{ // t23 has been of same height as t4
-		//	BF(X) = +1;   // t23 now higher
-		//	BF(Z) = –1;   // t4 now lower than X
-		//}
-		//else
-		//{ // 2nd case happens with insertion or deletion:
-		//	BF(X) = 0;
-		//	BF(Z) = 0;
-		//}
-		//return Z; // return new root of rotated subtree
+		{
+			innerChild->setParent(parentNode);
+		}
+
+		currNode->setLeft(parentNode);
+		parentNode->setParent(currNode);
+
+		// 1st case, BF(current node) == 0,
+		//   only happens with deletion, not insertion:
+		if (parentNode->getBf() == 0)
+		{
+			// t23 has been of same height as t4
+			parentNode->setBf(1);   // t23 now higher
+			currNode->setBf(-1);   // t4 now lower than parent node
+		}
+		else
+		{ // 2nd case happens with insertion or deletion:
+			parentNode->setBf(0);
+			currNode->setBf(0);
+		}
+
+		return currNode; // return new root of rotated subtree
 	}
 
 	AVLNode<T>* rotateRight(AVLNode<T>* parentNode, AVLNode<T>* currNode)
 	{
-		// TODO:
+		// currNode is by 2 higher than its sibling
+		AVLNode<T>* innerChild = currNode->getRight(); // Inner child of currNode
+		parentNode->setLeft(innerChild);
+
+		if (innerChild != nullptr)
+		{
+			innerChild->setParent(parentNode);
+		}
+
+		currNode->setRight(parentNode);
+		parentNode->setParent(currNode);
+
+		// 1st case, BF(current node) == 0,
+		//   only happens with deletion, not insertion:
+		if (parentNode->getBf() == 0)
+		{
+			// t23 has been of same height as t4
+			parentNode->setBf(1);   // t23 now higher
+			currNode->setBf(-1);   // t4 now lower than parent node
+		}
+		else
+		{ // 2nd case happens with insertion or deletion:
+			parentNode->setBf(0);
+			currNode->setBf(0);
+		}
+
+		return currNode; // return new root of rotated subtree
 	}
 
 	AVLNode<T>* insertNode(
@@ -145,14 +178,14 @@ public:
 		// TODO: do the shifts of nodes here and modify the heights of each node along the path
 	}
 
-	const signed char getBf(AVLNode<T>* node)
-	{
-		if (node != nullptr)
-		{
-			return node->getRight()->getHeight() - node->getLeft()->getHeight();
-		}
-		return -11; // node is not present, return some number that is not in the incosistent/consistent cases  
-	}
+	//const signed char getBf(AVLNode<T>* node)
+	//{
+	//	if (node != nullptr)
+	//	{
+	//		return node->getRight()->getHeight() - node->getLeft()->getHeight();
+	//	}
+	//	return -11; // node is not present, return some number that is not in the incosistent/consistent cases  
+	//}
 
 	bool isRightChild(AVLNode<T>* parentNode, AVLNode<T>* nodeToCheck)
 	{
