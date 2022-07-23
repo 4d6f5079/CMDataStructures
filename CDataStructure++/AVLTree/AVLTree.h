@@ -67,7 +67,7 @@ public:
 	* SIMPLE ROTATION - LEFT CASE:
 	*	Z (currNode) is a left child of its parent X (parentNode) and BF(Z) <= 0
 	*/
-	void rotateLeft(AVLNode<T>* parentNode, AVLNode<T>* currNode)
+	AVLNode<T>* rotateLeft(AVLNode<T>* parentNode, AVLNode<T>* currNode)
 	{
 		// currNode is by 2 higher than its sibling
 		AVLNode<T>* innerChild = currNode->getLeft(); // Left child of currNode
@@ -96,15 +96,14 @@ public:
 			currNode->setBf(0);
 		}
 
-		return;
-		//return currNode; // return new root of rotated subtree
+		return currNode; // return new root of rotated subtree
 	}
 
 	/*
 	* SIMPLE ROTATION - RIGHT CASE: 
 	*	Z (currNode) is a right child of its parent X (parentNode) and BF(Z) >= 0
 	*/
-	void rotateRight(AVLNode<T>* parentNode, AVLNode<T>* currNode)
+	AVLNode<T>* rotateRight(AVLNode<T>* parentNode, AVLNode<T>* currNode)
 	{
 		// currNode is by 2 higher than its sibling
 		AVLNode<T>* innerChild = currNode->getRight(); // Right child of currNode
@@ -133,15 +132,14 @@ public:
 			currNode->setBf(0);
 		}
 
-		//return currNode; // return new root of rotated subtree
-		return;
+		return currNode; // return new root of rotated subtree
 	}
 
 	/*
 	* DOUBLE ROTATION - RIGHT_LEFT ROTATION:
 	*	Z (currNode) is a right child of its parent X (parentNode) and BF(Z) < 0
 	*/
-	void rotateRightLeft(AVLNode<T>* parentNode, AVLNode<T>* currNode)
+	AVLNode<T>* rotateRightLeft(AVLNode<T>* parentNode, AVLNode<T>* currNode)
 	{
 		AVLNode<T>* innerChild = currNode->getLeft(); // Y
 		AVLNode<T>* leftOfInnerChild = innerChild->getLeft(); // t2
@@ -194,19 +192,18 @@ public:
 
 			innerChild->setBf(0);
 
-			return;
-			//return innerChild;
+			return innerChild;
 		}
 
 		std::cout << "[rotateRightLeft] innerChild is not valid (nullptr): " << innerChild << "\n";
-		//return nullptr;
+		return nullptr;
 	}
 
 	/*
 	* DOUBLE ROTATION - LEFT_RIGHT ROTATION:
 	*	Z (currNode) is a left child of its parent X (parentNode) and BF(Z) > 0
 	*/
-	void rotateLeftRight(AVLNode<T>* parentNode, AVLNode<T>* currNode)
+	AVLNode<T>* rotateLeftRight(AVLNode<T>* parentNode, AVLNode<T>* currNode)
 	{
 		AVLNode<T>* innerChild = currNode->getRight(); // Y
 		AVLNode<T>* leftOfInnerChild = innerChild->getLeft(); // t3
@@ -259,19 +256,18 @@ public:
 
 			innerChild->setBf(0);
 
-			return;
-			//return innerChild;
+			return innerChild;
 		}
 
 		std::cout << "[rotateLeftRight] innerChild is not valid (nullptr): " << innerChild << "\n";
-		//return nullptr;
+		return nullptr;
 	}
 
 	AVLNode<T>* insertNode(
 		const T& data, 
 		AVLNode<T>* parentNode, 
-		AVLNode<T>* currNode, 
-		std::size_t height
+		AVLNode<T>* currNode 
+		//std::size_t height
 	)
 	{
 		if (root == nullptr)
@@ -285,11 +281,13 @@ public:
 			{
 				if (currNode->hasLeft())
 				{
-					return insertNode(data, currNode, currNode->getLeft(), height + 1);
+					//return insertNode(data, currNode, currNode->getLeft(), height + 1);
+					return insertNode(data, currNode, currNode->getLeft());
 				}
 				else
 				{
-					currNode->setLeft(new AVLNode<T>(data, currNode, height + 1));
+					//currNode->setLeft(new AVLNode<T>(data, currNode, height + 1));
+					currNode->setLeft(new AVLNode<T>(data, currNode));
 					return currNode->getLeft();
 				}
 			}
@@ -297,11 +295,13 @@ public:
 			{
 				if (currNode->hasRight())
 				{
-					return insertNode(data, currNode, currNode->getRight(), height + 1);
+					//return insertNode(data, currNode, currNode->getRight(), height + 1);
+					return insertNode(data, currNode, currNode->getRight());
 				}
 				else
 				{
-					currNode->setRight(new AVLNode<T>(data, currNode, height + 1));
+					//currNode->setRight(new AVLNode<T>(data, currNode, height + 1));
+					currNode->setRight(new AVLNode<T>(data, currNode));
 					return currNode->getRight();
 				}
 			}
@@ -313,84 +313,12 @@ public:
 
 	void insertNode(const T& data)
 	{
-		const auto insertedNodeRef = insertNode(data, nullptr, root, 0);
+		//const auto insertedNodeRef = insertNode(data, nullptr, root, 0);
+		const auto insertedNodeRef = insertNode(data, nullptr, root);
 		
 		if (insertedNodeRef)
 			rebalanceTree(insertedNodeRef);
 	}
-
-	inline void rebalanceTree(AVLNode<T>*  parentNode, AVLNode<T>* currNode, const signed char bfDiff)
-	{		
-		if (parentNode == nullptr)
-		{
-			return;
-		}
-
-		const auto bfParent = parentNode->getBf();
-		
-		// the parent has unbalanced subtrees (invariant is violated)
-		if (bfParent < -1 || bfParent > 1)
-		{
-			//The rebalancing is performed differently :
-			//	Right Right	- X is rebalanced with a simple	rotation rotate_Left (see figure 2)
-			//	Left Left	- X is rebalanced with a simple	rotation rotate_Right (mirror - image of figure 2)
-			//	Right Left	- X is rebalanced with a double	rotation rotate_RightLeft (see figure 3)
-			//	Left Right	- X is rebalanced with a double	rotation rotate_LeftRight (mirror - image of figure 3)
-
-			if (parentNode->getRight() == currNode && currNode->getBf() >= 0) // Right Right	- Z is a right	child of its parent X and BF(Z) >= 0 
-			{
-				rotateLeft(parentNode, currNode);
-			}
-			else if (parentNode->getRight() == currNode && currNode->getBf() < 0) // Right Left	- Z is a right	child of its parent X and BF(Z) < 0 
-			{
-				rotateRightLeft(parentNode, currNode);
-			}
-			else if (parentNode->getLeft() == currNode && currNode->getBf() <= 0)  // Left Left	- Z is a left	child of its parent X and BF(Z) <= 0
-			{
-				rotateRight(parentNode, currNode);
-			}
-			else if (parentNode->getLeft() == currNode && currNode->getBf() > 0) // Left Right	- Z is a left	child of its parent X and BF(Z) > 0
-			{
-				rotateLeftRight(parentNode, currNode);
-			}
-			else // TODO: THIS IS FOR DEBUGGING ONLY, THIS BRANCH SHOULD NOT BE REACHED
-			{
-				std::cout << "[rebalanceTree] bfParent: " << bfParent << " , the else branch is reached which should not happen!";
-			}
-		}
-		else // tree from parent node is balanced (invariant holds true), no need for rotation
-		{
-			// increment/decrement bf value of parent node
-			parentNode->setBf(bfParent + bfDiff);
-
-			// recurse upwards with new parent node
-			return rebalanceTree(parentNode->getParent(), parentNode, bfDiff);
-		}
-	}
-
-	void rebalanceTree(AVLNode<T>* insertedNode)
-	{
-		AVLNode<T>* parentCurrNode = insertedNode->getParent();
-		if (parentCurrNode->getRight() == insertedNode)
-		{
-			// if node is inserted to the right, then add 1 to all ancestors/parent nodes starting from this node
-			rebalanceTree(insertedNode->getParent(), insertedNode, 1);
-		}
-		else
-		{
-			// if node is inserted to the right, then subtract 1 to all ancestors/parent nodes starting from this node
-			rebalanceTree(insertedNode->getParent(), insertedNode, -1);
-		}
-	}
-
-	//const signed char getBf(AVLNode<T>* node)
-	//{
-	//	if (node != nullptr)
-	//	{
-	//		return node->getRight()->getHeight() - node->getLeft()->getHeight();
-	//	}
-	//	return -11; // node is not present, return some number that is not in the incosistent/consistent cases  
-	//}
 
 	bool isRightChild(AVLNode<T>* parentNode, AVLNode<T>* nodeToCheck)
 	{
@@ -455,24 +383,100 @@ private:
 		return nullptr;
 	}
 
-	//inline void setChildFromParent(
-	//	AVLNode<T>* parentNode,
-	//	AVLNode<T>* childToSet,
-	//	AVLNode<T>* newRefToSetTo
-	//)
-	//{
-	//	if (parentNode != nullptr)
-	//	{
-	//		if (parentNode->getLeft() == childToSet)
-	//		{
-	//			parentNode->setLeft(newRefToSetTo);
-	//		}
-	//		else if (parentNode->getRight() == childToSet)
-	//		{
-	//			parentNode->setRight(newRefToSetTo);
-	//		}
-	//	}
-	//}
+	inline void rebalanceTree(AVLNode<T>* parentNode, AVLNode<T>* currNode, const signed char bfDiff)
+	{
+		if (parentNode == nullptr)
+		{
+			return;
+		}
+
+		// increment/decrement bf value of parent node
+		parentNode->setBf(parentNode->getBf() + bfDiff);
+
+		const auto bfParent = parentNode->getBf();
+
+		// the parent has unbalanced subtrees (invariant is violated)
+		if (bfParent < -1 || bfParent > 1)
+		{
+			//The rebalancing is performed differently :
+			//	Right Right	- X is rebalanced with a simple	rotation rotate_Left (see figure 2)
+			//	Left Left	- X is rebalanced with a simple	rotation rotate_Right (mirror - image of figure 2)
+			//	Right Left	- X is rebalanced with a double	rotation rotate_RightLeft (see figure 3)
+			//	Left Right	- X is rebalanced with a double	rotation rotate_LeftRight (mirror - image of figure 3)
+
+			if (parentNode->getRight() == currNode && currNode->getBf() >= 0) // Right Right	- Z is a right	child of its parent X and BF(Z) >= 0 
+			{
+				if (parentNode == root)
+				{
+					root = rotateLeft(parentNode, currNode);
+				}
+				else
+				{
+					rotateLeft(parentNode, currNode);
+				}
+			}
+			else if (parentNode->getRight() == currNode && currNode->getBf() < 0) // Right Left	- Z is a right	child of its parent X and BF(Z) < 0 
+			{
+				if (parentNode == root)
+				{
+					root = rotateRightLeft(parentNode, currNode);
+				}
+				else
+				{
+					rotateRightLeft(parentNode, currNode);
+				}
+			}
+			else if (parentNode->getLeft() == currNode && currNode->getBf() <= 0)  // Left Left	- Z is a left	child of its parent X and BF(Z) <= 0
+			{
+				if (parentNode == root)
+				{
+					root = rotateRight(parentNode, currNode);
+				}
+				else
+				{
+					rotateRight(parentNode, currNode);
+				}
+			}
+			else if (parentNode->getLeft() == currNode && currNode->getBf() > 0) // Left Right	- Z is a left	child of its parent X and BF(Z) > 0
+			{
+				if (parentNode == root)
+				{
+					root = rotateLeftRight(parentNode, currNode);
+				}
+				else
+				{
+					rotateLeftRight(parentNode, currNode);
+				}
+			}
+			else // TODO: THIS IS FOR DEBUGGING ONLY, THIS BRANCH SHOULD NOT BE REACHED
+			{
+				std::cout << "[rebalanceTree] bfParent: " << bfParent << " , the else branch is reached which should not happen!";
+			}
+		}
+		else // tree from parent node is balanced (invariant holds true), no need for rotation
+		{
+			// recurse upwards with new parent node
+			return rebalanceTree(parentNode->getParent(), parentNode, bfDiff);
+		}
+	}
+
+	void rebalanceTree(AVLNode<T>* insertedNode)
+	{
+		AVLNode<T>* parentCurrNode = insertedNode->getParent();
+		if (parentCurrNode != nullptr)
+		{
+			if (parentCurrNode->getRight() == insertedNode)
+			{
+				// if node is inserted to the right, then add 1 to all ancestors/parent nodes starting from this node
+				rebalanceTree(parentCurrNode, insertedNode, 1);
+			}
+			else
+			{
+				// if node is inserted to the right, then subtract 1 to all ancestors/parent nodes starting from this node
+				rebalanceTree(parentCurrNode, insertedNode, -1);
+			}
+		}
+	}
 
 	void cleanUpTree(AVLNode<T>* currNode)
 	{

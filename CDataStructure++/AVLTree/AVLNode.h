@@ -21,13 +21,12 @@ public:
 
 	explicit AVLNode(
 		const T& data,
-		AVLNode* parent,
-		signed char bf
+		AVLNode* parent
 	)
 		:
 		data(data),
-		bf(bf),
 		parent(parent),
+		bf(0),
 		left(nullptr),
 		right(nullptr)
 	{
@@ -49,24 +48,24 @@ public:
 		return bf;
 	}
 
-	void setLeft(const AVLNode* newLeft)
+	void setLeft(AVLNode* newLeft)
 	{
 		this->left = newLeft;
 	}
 	
-	void setRight(const AVLNode* newRight)
+	void setRight(AVLNode* newRight)
 	{
 		this->right = newRight;
 	}
 
-	void setParent(const AVLNode* newParent)
+	void setParent(AVLNode* newParent)
 	{
 		this->parent = newParent;
 	}
 
-	inline void setBf(const signed char newHeight)
+	inline void setBf(const signed char newBf)
 	{
-		this->height = newHeight;
+		this->bf = newBf;
 	}
 
 	const T& getData() const
@@ -142,7 +141,7 @@ public:
 		std::cout << "/                      /\n";
 		std::cout << "|                      |\n";
 		std::cout << "|         " << data << "          |\n";
-		std::cout << "|          (bf: " << bf << ")        |\n";
+		std::cout << "|          (bf: " << (int)bf << ")        |\n";
 		std::cout << "|     (addr: " << this << ")     |\n";
 		std::cout << "\\                      \\\n";
 		std::cout << " ----------------------\n";
