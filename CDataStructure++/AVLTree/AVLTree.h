@@ -79,7 +79,13 @@ public:
 		}
 
 		currNode->setLeft(parentNode);
-		currNode->setParent(parentNode->getParent());
+
+		// Set new parent left/right of currNode to currNode itself so that ref from other nodes 
+		// to currNode does not get lost
+		auto parentParentNode = parentNode->getParent();
+		setChildFromParent(parentParentNode, parentNode, currNode);
+
+		currNode->setParent(parentParentNode);
 		parentNode->setParent(currNode);
 
 		// 1st case, BF(current node) == 0,
@@ -115,7 +121,13 @@ public:
 		}
 
 		currNode->setRight(parentNode);
-		currNode->setParent(parentNode->getParent());
+
+		// Set new parent left/right of currNode to currNode itself so that ref from other nodes 
+		// to currNode does not get lost
+		auto parentParentNode = parentNode->getParent();
+		setChildFromParent(parentParentNode, parentNode, currNode);
+
+		currNode->setParent(parentParentNode);
 		parentNode->setParent(currNode);
 
 		// 1st case, BF(current node) == 0,
@@ -162,7 +174,12 @@ public:
 			innerChild->setLeft(parentNode);
 			innerChild->setRight(currNode);
 
-			innerChild->setParent(parentNode->getParent());
+			// Set new parent left/right of innerChild to innerChild itself so that ref from other nodes 
+			// to innerChild does not get lost
+			auto parentParentNode = parentNode->getParent();
+			setChildFromParent(parentParentNode, parentNode, innerChild);
+
+			innerChild->setParent(parentParentNode);
 			parentNode->setParent(innerChild);
 			currNode->setParent(innerChild);
 
@@ -226,7 +243,12 @@ public:
 			innerChild->setRight(parentNode);
 			innerChild->setLeft(currNode);
 
-			innerChild->setParent(parentNode->getParent());
+			// Set new parent left/right of innerChild to innerChild itself so that ref from other nodes 
+			// to innerChild does not get lost
+			auto parentParentNode = parentNode->getParent();
+			setChildFromParent(parentParentNode, parentNode, innerChild);
+
+			innerChild->setParent(parentParentNode);
 			parentNode->setParent(innerChild);
 			currNode->setParent(innerChild);
 
@@ -350,7 +372,7 @@ private:
 			std::cout << (isLeft ? "|-- " : "\\-- ");
 
 			// print the value of the node
-			std::cout << "(" << node->getData() << ")" << std::endl;
+			std::cout << "(" << node->getData() << ", bf: " << (int)node->getBf() << ")" << std::endl;
 
 			// enter the next tree level - left and right branch
 			printTree(prefix + (isLeft ? "|   " : "    "), node->getLeft(), true);
@@ -474,6 +496,25 @@ private:
 			{
 				// if node is inserted to the right, then subtract 1 to all ancestors/parent nodes starting from this node
 				rebalanceTree(parentCurrNode, insertedNode, -1);
+			}
+		}
+	}
+
+	inline void setChildFromParent(
+		AVLNode<T>* parentNode,
+		AVLNode<T>* childToSet,
+		AVLNode<T>* newRefToSetTo
+	)
+	{
+		if (parentNode != nullptr)
+		{
+			if (parentNode->getLeft() == childToSet)
+			{
+				parentNode->setLeft(newRefToSetTo);
+			}
+			else if (parentNode->getRight() == childToSet)
+			{
+				parentNode->setRight(newRefToSetTo);
 			}
 		}
 	}

@@ -150,14 +150,29 @@ int testAVLTree()
 	t.insertNode(50);
 	t.insertNode(55);
 	t.printTree();
-	t.DFS(50)->printNode();
-	t.DFS(55)->printNode();
+	//t.DFS(50)->printNode();
+	//t.DFS(55)->printNode();
 
 	t.insertNode(57);
 	t.printTree();
-	t.DFS(50)->printNode();
 	t.DFS(55)->printNode();
+	t.DFS(50)->printNode();
 	t.DFS(57)->printNode();
+
+	t.insertNode(40);
+	t.printTree();
+	//t.DFS(55)->printNode();
+	//t.DFS(50)->printNode();
+	//t.DFS(57)->printNode();
+	//t.DFS(40)->printNode();
+
+	t.insertNode(30);
+	t.printTree();
+	//t.DFS(55)->printNode();
+	//t.DFS(50)->printNode();
+	//t.DFS(57)->printNode();
+	//t.DFS(40)->printNode();
+	//t.DFS(30)->printNode();
 
 	//t.insertNode(60);
 	//t.insertNode(77);

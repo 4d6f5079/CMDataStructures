@@ -48,17 +48,17 @@ public:
 		return bf;
 	}
 
-	void setLeft(AVLNode* newLeft)
+	inline void setLeft(AVLNode* newLeft)
 	{
 		this->left = newLeft;
 	}
 	
-	void setRight(AVLNode* newRight)
+	inline void setRight(AVLNode* newRight)
 	{
 		this->right = newRight;
 	}
 
-	void setParent(AVLNode* newParent)
+	inline void setParent(AVLNode* newParent)
 	{
 		this->parent = newParent;
 	}
@@ -83,7 +83,7 @@ public:
 		return data == otherData->getData();
 	}
 
-	bool hasLeft() const
+	inline bool hasLeft() const
 	{
 		if (left != nullptr)
 		{
@@ -92,7 +92,7 @@ public:
 		return false;
 	}
 
-	bool hasRight() const
+	inline bool hasRight() const
 	{
 		if (right != nullptr)
 		{
@@ -101,7 +101,7 @@ public:
 		return false;
 	}
 
-	bool hasParent() const
+	inline bool hasParent() const
 	{
 		if (parent != nullptr)
 		{
@@ -110,22 +110,22 @@ public:
 		return false;
 	}
 
-	AVLNode* getLeft()
+	inline AVLNode* getLeft()
 	{
 		return left;
 	}
 
-	AVLNode* getRight()
+	inline AVLNode* getRight()
 	{
 		return right;
 	}
 
-	AVLNode* getParent()
+	inline AVLNode* getParent()
 	{
 		return parent;
 	}
 
-	void printNode()
+	inline void printNode()
 	{
 		std::cout << "\n";
 		if (parent)
