@@ -44,7 +44,7 @@ public:
 			parent = nullptr;
 	}
 
-	const signed char getBf() const
+	inline const signed char getBf() const
 	{
 		return bf;
 	}
@@ -64,7 +64,7 @@ public:
 		this->parent = newParent;
 	}
 
-	void setBf(const signed char newHeight)
+	inline void setBf(const signed char newHeight)
 	{
 		this->height = newHeight;
 	}
