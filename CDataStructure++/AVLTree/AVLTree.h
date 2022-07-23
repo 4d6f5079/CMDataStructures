@@ -63,13 +63,13 @@ public:
 	}
 
 	/*
-	* ROTATE LEFT CASE:
-	*	<currNode> is a left child of its parent <parentNode> and BF(<currNode>) <= 0
+	* SIMPLE ROTATION - LEFT CASE:
+	*	Z (currNode) is a left child of its parent X (parentNode) and BF(Z) <= 0
 	*/
 	AVLNode<T>* rotateLeft(AVLNode<T>* parentNode, AVLNode<T>* currNode)
 	{
 		// currNode is by 2 higher than its sibling
-		AVLNode<T>* innerChild = currNode->getLeft(); // Inner child of currNode
+		AVLNode<T>* innerChild = currNode->getLeft(); // Left child of currNode
 		parentNode->setRight(innerChild);
 
 		if (innerChild != nullptr)
@@ -78,6 +78,7 @@ public:
 		}
 
 		currNode->setLeft(parentNode);
+		currNode->setParent(parentNode->getParent());
 		parentNode->setParent(currNode);
 
 		// 1st case, BF(current node) == 0,
@@ -98,13 +99,13 @@ public:
 	}
 
 	/*
-	* ROTATE RIGHT CASE: 
-	*	<currNode> is a right child of its parent <parentNode> and BF(<currNode>) >= 0
+	* SIMPLE ROTATION - RIGHT CASE: 
+	*	Z (currNode) is a right child of its parent X (parentNode) and BF(Z) >= 0
 	*/
 	AVLNode<T>* rotateRight(AVLNode<T>* parentNode, AVLNode<T>* currNode)
 	{
 		// currNode is by 2 higher than its sibling
-		AVLNode<T>* innerChild = currNode->getRight(); // Inner child of currNode
+		AVLNode<T>* innerChild = currNode->getRight(); // Right child of currNode
 		parentNode->setLeft(innerChild);
 
 		if (innerChild != nullptr)
@@ -113,15 +114,16 @@ public:
 		}
 
 		currNode->setRight(parentNode);
+		currNode->setParent(parentNode->getParent());
 		parentNode->setParent(currNode);
 
 		// 1st case, BF(current node) == 0,
 		//   only happens with deletion, not insertion:
 		if (currNode->getBf() == 0)
 		{
-			// t23 has been of same height as t4
-			parentNode->setBf(1);   // t23 now higher
-			currNode->setBf(-1);   // t4 now lower than parent node
+			// t23 has been of same height as t1
+			parentNode->setBf(-1);   // t23 now higher
+			currNode->setBf(1);   // t1 now lower than parent node
 		}
 		else
 		{ // 2nd case happens with insertion or deletion:
@@ -132,9 +134,131 @@ public:
 		return currNode; // return new root of rotated subtree
 	}
 
-	AVLNode<T>* rotateLeftLeft()
+	/*
+	* DOUBLE ROTATION - RIGHT_LEFT ROTATION:
+	*	Z (currNode) is a right child of its parent X (parentNode) and BF(Z) < 0
+	*/
+	AVLNode<T>* rotateRightLeft(AVLNode<T>* parentNode, AVLNode<T>* currNode)
 	{
-		// TODO: rotate left twice
+		AVLNode<T>* innerChild = currNode->getLeft(); // Y
+		AVLNode<T>* leftOfInnerChild = innerChild->getLeft(); // t2
+		AVLNode<T>* rightOfInnerChild = innerChild->getRight(); // t3
+		const auto innerChildBF = innerChild->getBf();
+
+		if (innerChild != nullptr) // TODO: remove this if statement as it is assumed/expected that this node exists
+		{
+			// rotate right around currNode and then left around parentNode
+			currNode->setLeft(rightOfInnerChild);
+			if (rightOfInnerChild != nullptr)
+			{
+				rightOfInnerChild->setParent(currNode);
+			}
+			parentNode->setRight(leftOfInnerChild);
+			if (leftOfInnerChild != nullptr)
+			{
+				leftOfInnerChild->setParent(parentNode);
+			}
+			innerChild->setLeft(parentNode);
+			innerChild->setRight(currNode);
+
+			innerChild->setParent(parentNode->getParent());
+			parentNode->setParent(innerChild);
+			currNode->setParent(innerChild);
+
+			// 1st case, BF(Y) == 0,
+			//   only happens with deletion, not insertion:
+			if (innerChildBF == 0)
+			{
+				parentNode->setBf(0);
+				currNode->setBf(0);
+			}
+			else
+			{
+				// other cases happen with insertion or deletion:
+				if (innerChildBF > 0)
+				{
+					// t3 was higher
+					parentNode->setBf(-1); // t1 now higher
+					currNode->setBf(0);
+				}
+				else
+				{
+					// t2 was higher
+					parentNode->setBf(0);
+					currNode->setBf(1); // t4 now higher
+				}
+			}
+
+			innerChild->setBf(0);
+
+			return innerChild;
+		}
+
+		std::cout << "[rotateRightLeft] innerChild is not valid (nullptr): " << innerChild << "\n";
+		return nullptr;
+	}
+
+	/*
+	* DOUBLE ROTATION - LEFT_RIGHT ROTATION:
+	*	Z (currNode) is a left child of its parent X (parentNode) and BF(Z) > 0
+	*/
+	AVLNode<T>* rotateLeftRight(AVLNode<T>* parentNode, AVLNode<T>* currNode)
+	{
+		AVLNode<T>* innerChild = currNode->getRight(); // Y
+		AVLNode<T>* leftOfInnerChild = innerChild->getLeft(); // t3
+		AVLNode<T>* rightOfInnerChild = innerChild->getRight(); // t2
+		const auto innerChildBF = innerChild->getBf();
+
+		if (innerChild != nullptr) // TODO: remove this if statement as it is assumed/expected that this node exists
+		{
+			// rotate right around currNode and then left around parentNode
+			currNode->setRight(leftOfInnerChild);
+			if (leftOfInnerChild != nullptr)
+			{
+				leftOfInnerChild->setParent(currNode);
+			}
+			parentNode->setLeft(rightOfInnerChild);
+			if (rightOfInnerChild != nullptr)
+			{
+				rightOfInnerChild->setParent(parentNode);
+			}
+			innerChild->setRight(parentNode);
+			innerChild->setLeft(currNode);
+
+			innerChild->setParent(parentNode->getParent());
+			parentNode->setParent(innerChild);
+			currNode->setParent(innerChild);
+
+			// 1st case, BF(Y) == 0,
+			//   only happens with deletion, not insertion:
+			if (innerChildBF == 0)
+			{
+				parentNode->setBf(0);
+				currNode->setBf(0);
+			}
+			else
+			{
+				// other cases happen with insertion or deletion:
+				if (innerChildBF > 0)
+				{
+					// t2 was higher
+					parentNode->setBf(0); 
+					currNode->setBf(-1); // t4 now higher
+				}
+				else
+				{
+					// t3 was higher
+					parentNode->setBf(1); // t1 now higher
+					currNode->setBf(0); 
+				}
+			}
+
+			innerChild->setBf(0);
+
+			return innerChild;
+		}
+
+		std::cout << "[rotateLeftRight] innerChild is not valid (nullptr): " << innerChild << "\n";
 		return nullptr;
 	}
 
