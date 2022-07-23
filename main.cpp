@@ -144,10 +144,8 @@ int testingBinarySearchTree()
 	}
 }
 
-int main(int argc, char* argv[])
-{	
-	//return testingHashTableWithBenchmark();
-	//return testingBinarySearchTree();
+int testAVLTree()
+{
 	AVLTree<int> t;
 	t.insertNode(50);
 	t.insertNode(55);
@@ -177,5 +175,13 @@ int main(int argc, char* argv[])
 	//t.DFS(103)->printNode();
 	//t.printTree();
 	//std::cout <<  t.getRoot() << std::endl;
-	//AVLNode<int> newNode(1);
+
+	return 0;
+}
+
+int main(int argc, char* argv[])
+{	
+	//return testingHashTableWithBenchmark();
+	//return testingBinarySearchTree();
+	return testAVLTree();
 }
