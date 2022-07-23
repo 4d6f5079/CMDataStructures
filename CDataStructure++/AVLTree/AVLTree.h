@@ -476,11 +476,13 @@ private:
 			// as the increment or decrement of the bf value depends on whether we go up from the right of the left node.
 			if (isRightChild(parentParentNode, parentNode))
 			{
-				return rebalanceTree(parentParentNode, parentNode, constexpr signed char(1));
+				constexpr signed char RIGHT_INCREMENT = 1;
+				return rebalanceTree(parentParentNode, parentNode, RIGHT_INCREMENT);
 			}
 			else
 			{
-				return rebalanceTree(parentParentNode, parentNode, constexpr signed char(-1));
+				constexpr signed char LEFT_DECREMENT = -1;
+				return rebalanceTree(parentParentNode, parentNode, LEFT_DECREMENT);
 			}
 		}
 	}
@@ -493,12 +495,14 @@ private:
 			if (isRightChild(parentCurrNode, insertedNode))
 			{
 				// if node is inserted to the right, then add 1 to direct parent node
-				rebalanceTree(parentCurrNode, insertedNode, constexpr signed char(1));
+				constexpr signed char RIGHT_INCREMENT = 1;
+				rebalanceTree(parentCurrNode, insertedNode, RIGHT_INCREMENT);
 			}
 			else
 			{
 				// if node is inserted to the left, then subtract 1 to direct parent node
-				rebalanceTree(parentCurrNode, insertedNode, constexpr signed char(-1));
+				constexpr signed char LEFT_DECREMENT = -1;
+				rebalanceTree(parentCurrNode, insertedNode, LEFT_DECREMENT);
 			}
 		}
 	}
