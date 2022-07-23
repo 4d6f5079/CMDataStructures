@@ -8,7 +8,7 @@
 #include <functional>
 #include <algorithm>
 #include <exception>
-#include <AVLNode.h>
+#include <vector>
 
 const std::string randomStrGen(const size_t& length, const size_t& rndNum)
 {
@@ -62,8 +62,9 @@ int testingHashTableWithBenchmark()
 		// Initialize the uniform int generator and create binds to use the generator and random string generator
 		// as functions. This is done to have a uniform distribution of inputs so that a good hash can uniformaly distribute inputs
 		// throughout the bins.
-		std::default_random_engine generator;
-		std::uniform_int_distribution<size_t> distribution(UNIFORM_DIST_RND_MIN, UNIFORM_DIST_RND_MAX);
+		std::random_device rd; // obtain a random number from hardware
+		std::mt19937 generator(rd()); // seed the generator
+		std::uniform_int_distribution<std::size_t> distribution(UNIFORM_DIST_RND_MIN, UNIFORM_DIST_RND_MAX); // define the range
 		auto roll_dice = std::bind(distribution, generator);
 		const auto getRandomString = std::bind(&randomStrGen, std::placeholders::_1, std::placeholders::_2);
 
@@ -147,16 +148,26 @@ int testingBinarySearchTree()
 int testAVLTree()
 {
 	AVLTree<int> t;
-	t.insertNode(50);
-	t.insertNode(60);
-	t.insertNode(70);
-	t.insertNode(40);
-	t.insertNode(30);
-	t.insertNode(80);
-	t.insertNode(75);
-	t.insertNode(20);
-	t.insertNode(25);
-	t.insertNode(15);
+	//t.insertNode(50);
+	//t.insertNode(60);
+	//t.insertNode(70);
+	//t.insertNode(40);
+	//t.insertNode(30);
+	//t.insertNode(80);
+	//t.insertNode(75);
+	//t.insertNode(20);
+	//t.insertNode(25);
+	//t.insertNode(15);
+
+	t.insertNode(9);
+	t.insertNode(14);
+	t.insertNode(22);
+	t.insertNode(18);
+	t.insertNode(5);
+	t.insertNode(7);
+	t.insertNode(8);
+	t.insertNode(16);
+
 	t.printTree();
 
 	return 0;

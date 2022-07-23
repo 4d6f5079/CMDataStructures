@@ -51,7 +51,7 @@ public:
 		AVLNode<T>* currNode
 	)
 	{
-		// TODO:
+		// TODO: implement deletion of node
 	}
 
 	/*
@@ -342,15 +342,6 @@ public:
 			rebalanceTree(insertedNodeRef);
 	}
 
-	bool isRightChild(AVLNode<T>* parentNode, AVLNode<T>* nodeToCheck)
-	{
-		if (parentNode->getRight() == nodeToCheck)
-		{
-			return true;
-		}
-		return false;
-	}
-
 	AVLNode<T>* getRoot()
 	{
 		return this->root;
@@ -407,11 +398,6 @@ private:
 
 	inline void rebalanceTree(AVLNode<T>* parentNode, AVLNode<T>* currNode, const signed char bfDiff)
 	{
-		if (parentNode == nullptr)
-		{
-			return;
-		}
-
 		// increment/decrement bf value of parent node
 		parentNode->setBf(parentNode->getBf() + bfDiff);
 
@@ -470,15 +456,32 @@ private:
 					rotateLeftRight(parentNode, currNode);
 				}
 			}
-			else // TODO: THIS IS FOR DEBUGGING ONLY, THIS BRANCH SHOULD NOT BE REACHED
+			else
 			{
 				std::cout << "[rebalanceTree] bfParent: " << bfParent << " , the else branch is reached which should not happen!";
 			}
 		}
 		else // tree from parent node is balanced (invariant holds true), no need for rotation
 		{
-			// recurse upwards with new parent node
-			return rebalanceTree(parentNode->getParent(), parentNode, bfDiff);
+			auto parentParentNode = parentNode->getParent();
+			
+			// no updates possible to a parentNode if we are at the root
+			if (parentParentNode == nullptr)
+			{
+				return;
+			}
+
+			// recurse upwards with new parent node, change bfDiff to +1 if going from right-up the tree
+			// or -1 if going from left-up direction. This is done so that bf values are correctly modified
+			// as the increment or decrement of the bf value depends on whether we go up from the right of the left node.
+			if (isRightChild(parentParentNode, parentNode))
+			{
+				return rebalanceTree(parentParentNode, parentNode, constexpr signed char(1));
+			}
+			else
+			{
+				return rebalanceTree(parentParentNode, parentNode, constexpr signed char(-1));
+			}
 		}
 	}
 
@@ -487,17 +490,26 @@ private:
 		AVLNode<T>* parentCurrNode = insertedNode->getParent();
 		if (parentCurrNode != nullptr)
 		{
-			if (parentCurrNode->getRight() == insertedNode)
+			if (isRightChild(parentCurrNode, insertedNode))
 			{
-				// if node is inserted to the right, then add 1 to all ancestors/parent nodes starting from this node
-				rebalanceTree(parentCurrNode, insertedNode, 1);
+				// if node is inserted to the right, then add 1 to direct parent node
+				rebalanceTree(parentCurrNode, insertedNode, constexpr signed char(1));
 			}
 			else
 			{
-				// if node is inserted to the right, then subtract 1 to all ancestors/parent nodes starting from this node
-				rebalanceTree(parentCurrNode, insertedNode, -1);
+				// if node is inserted to the left, then subtract 1 to direct parent node
+				rebalanceTree(parentCurrNode, insertedNode, constexpr signed char(-1));
 			}
 		}
+	}
+
+	inline bool isRightChild(AVLNode<T>* parentNode, AVLNode<T>* nodeToCheck)
+	{
+		if (parentNode->getRight() == nodeToCheck)
+		{
+			return true;
+		}
+		return false;
 	}
 
 	inline void setChildFromParent(
