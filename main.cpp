@@ -148,48 +148,16 @@ int testAVLTree()
 {
 	AVLTree<int> t;
 	t.insertNode(50);
-	t.insertNode(55);
-	t.printTree();
-	//t.DFS(50)->printNode();
-	//t.DFS(55)->printNode();
-
-	t.insertNode(57);
-	t.printTree();
-	t.DFS(55)->printNode();
-	t.DFS(50)->printNode();
-	t.DFS(57)->printNode();
-
+	t.insertNode(60);
+	t.insertNode(70);
 	t.insertNode(40);
-	t.printTree();
-	//t.DFS(55)->printNode();
-	//t.DFS(50)->printNode();
-	//t.DFS(57)->printNode();
-	//t.DFS(40)->printNode();
-
 	t.insertNode(30);
+	t.insertNode(80);
+	t.insertNode(75);
+	t.insertNode(20);
+	t.insertNode(25);
+	t.insertNode(15);
 	t.printTree();
-	//t.DFS(55)->printNode();
-	//t.DFS(50)->printNode();
-	//t.DFS(57)->printNode();
-	//t.DFS(40)->printNode();
-	//t.DFS(30)->printNode();
-
-	//t.insertNode(60);
-	//t.insertNode(77);
-	//t.insertNode(100); 
-	//t.insertNode(101);
-	//t.insertNode(102);
-	//t.insertNode(103);
-	//t.DFS(99)->printNode();
-	//t.DFS(70)->printNode();
-	//t.DFS(60)->printNode();
-	//t.DFS(77)->printNode();
-	//t.DFS(100)->printNode();
-	//t.DFS(101)->printNode();
-	//t.DFS(102)->printNode();
-	//t.DFS(103)->printNode();
-	//t.printTree();
-	//std::cout <<  t.getRoot() << std::endl;
 
 	return 0;
 }
