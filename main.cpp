@@ -147,7 +147,7 @@ int testingBinarySearchTree()
 
 int testAVLTree()
 {
-	AVLTree<int> t;
+	AVLTree<int> t(9);
 	// t.insertNode(50);
 	// t.insertNode(60);
 	// t.insertNode(70);
@@ -158,15 +158,30 @@ int testAVLTree()
 	// t.insertNode(20);
 	// t.insertNode(25);
 	// t.insertNode(15);
-	t.insertNode(9);
-	t.insertNode(14);
-	t.insertNode(22);
-	t.insertNode(18);
-	t.insertNode(5);
-	t.insertNode(7);
+	t.insertNode(10);
+	t.insertNode(11);
+	t.insertNode(12);
 	t.insertNode(8);
-	t.insertNode(16);
-
+	t.insertNode(7);
+	t.insertNode(6);
+	t.insertNode(5);
+	t.insertNode(4);
+	t.insertNode(3);
+	t.insertNode(2);
+	t.insertNode(1);
+	t.insertNode(1);
+	t.insertNode(19);
+	t.insertNode(20);
+	t.insertNode(21);
+	t.insertNode(22);
+	t.insertNode(23);
+	t.insertNode(24);
+	t.insertNode(25);
+	t.insertNode(26);
+	std::cout << t.findInorderSuccessor(t.getRoot()->getRight())->getData() << std::endl;
+	std::cout << t.findInorderSuccessor(t.getRoot()->getRight())->getLeft() << std::endl;
+	std::cout << t.findInorderSuccessor(t.getRoot()->getRight())->getRight() << std::endl;
+	std::cout << t.findInorderSuccessor(t.getRoot()->getRight())->getParent() << std::endl;
 	t.printTree();
 
 	return 0;
