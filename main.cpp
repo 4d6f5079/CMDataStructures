@@ -10,7 +10,7 @@
 #include <exception>
 #include <vector>
 
-const std::string randomStrGen(const size_t& length, const size_t& rndNum)
+const std::string randomStrGen(const size_t &length, const size_t &rndNum)
 {
 	const static std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 	std::string result;
@@ -42,7 +42,7 @@ int testingLinkedList()
 		}
 		return 0;
 	}
-	catch (const std::exception&)
+	catch (const std::exception &)
 	{
 		return -1;
 	}
@@ -62,8 +62,8 @@ int testingHashTableWithBenchmark()
 		// Initialize the uniform int generator and create binds to use the generator and random string generator
 		// as functions. This is done to have a uniform distribution of inputs so that a good hash can uniformaly distribute inputs
 		// throughout the bins.
-		std::random_device rd; // obtain a random number from hardware
-		std::mt19937 generator(rd()); // seed the generator
+		std::random_device rd;																				 // obtain a random number from hardware
+		std::mt19937 generator(rd());																		 // seed the generator
 		std::uniform_int_distribution<std::size_t> distribution(UNIFORM_DIST_RND_MIN, UNIFORM_DIST_RND_MAX); // define the range
 		auto roll_dice = std::bind(distribution, generator);
 		const auto getRandomString = std::bind(&randomStrGen, std::placeholders::_1, std::placeholders::_2);
@@ -94,13 +94,13 @@ int testingHashTableWithBenchmark()
 			}
 		}
 
-		// Some Informational print outs for debugging 
+		// Some Informational print outs for debugging
 		ht.get(rndStrs[0]).printNodes();
 		ht.printBinsInfo();
 
 		return 0;
 	}
-	catch (const std::exception&)
+	catch (const std::exception &)
 	{
 		return -1;
 	}
@@ -126,7 +126,7 @@ int testingBinarySearchTree()
 		bst.insertNode(47);
 		bst.insertNode(48);
 		bst.insertNode(54);
-		//std::cout << bst.DFS(5)->getData() << std::endl;
+		// std::cout << bst.DFS(5)->getData() << std::endl;
 		std::cout << "Original Tree: \n";
 		bst.printTree();
 		std::cout << "removing leaf node case 1: \n";
@@ -135,11 +135,11 @@ int testingBinarySearchTree()
 		std::cout << "\n\nremoving root node case 2: \n";
 		bst.removeNode(22);
 		bst.printTree();
-		//std::cout << "\n\nremoving root node case 3: \n";
-		//bst.printTree();
+		// std::cout << "\n\nremoving root node case 3: \n";
+		// bst.printTree();
 		return 0;
 	}
-	catch (const std::exception&)
+	catch (const std::exception &)
 	{
 		return -1;
 	}
@@ -148,17 +148,16 @@ int testingBinarySearchTree()
 int testAVLTree()
 {
 	AVLTree<int> t;
-	//t.insertNode(50);
-	//t.insertNode(60);
-	//t.insertNode(70);
-	//t.insertNode(40);
-	//t.insertNode(30);
-	//t.insertNode(80);
-	//t.insertNode(75);
-	//t.insertNode(20);
-	//t.insertNode(25);
-	//t.insertNode(15);
-
+	// t.insertNode(50);
+	// t.insertNode(60);
+	// t.insertNode(70);
+	// t.insertNode(40);
+	// t.insertNode(30);
+	// t.insertNode(80);
+	// t.insertNode(75);
+	// t.insertNode(20);
+	// t.insertNode(25);
+	// t.insertNode(15);
 	t.insertNode(9);
 	t.insertNode(14);
 	t.insertNode(22);
@@ -173,9 +172,9 @@ int testAVLTree()
 	return 0;
 }
 
-int main(int argc, char* argv[])
-{	
-	//return testingHashTableWithBenchmark();
-	//return testingBinarySearchTree();
+int main(int argc, char *argv[])
+{
+	// return testingHashTableWithBenchmark();
+	// return testingBinarySearchTree();
 	return testAVLTree();
 }
