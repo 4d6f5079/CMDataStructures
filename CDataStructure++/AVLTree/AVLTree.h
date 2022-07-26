@@ -45,10 +45,15 @@ public:
 
 	AVLNode<T> *removeNode(
 		const T &data,
-		AVLNode<T> *parentNode,
 		AVLNode<T> *currNode)
 	{
 		// TODO: implement deletion of node
+		// Should be the same way as with deletion in BST.
+		// Some things that should be implemented differently:
+		// 	1: The BF value of the removed node should be taken over to the node that it is replaced with
+		// 		So the BF of successor node should be replaced with the BF of the removed node
+		//	2: After deletion, the parent before deletion of the node that is used to replace the deleted
+		//		node should be used to recursivly update BF values of parent nodes until BF of -1 or 1 is found
 	}
 
 	/*
@@ -56,8 +61,10 @@ public:
 	 */
 	void removeNode(const T &data)
 	{
-		const auto parentRemovedNodeRef = removeNode(data, nullptr, root);
-		rebalanceTree(parentRemovedNodeRef);
+		const auto parentRemovedNodeRef = removeNode(data, root);
+
+		if (parentRemovedNodeRef)
+			rebalanceTree(parentRemovedNodeRef);
 	}
 
 	/*
@@ -285,9 +292,7 @@ public:
 	AVLNode<T> *insertNode(
 		const T &data,
 		AVLNode<T> *parentNode,
-		AVLNode<T> *currNode
-		// std::size_t height
-	)
+		AVLNode<T> *currNode)
 	{
 		if (root == nullptr)
 		{
@@ -420,11 +425,12 @@ private:
 		// the parent has unbalanced subtrees (invariant is violated)
 		if (bfParent < -1 || bfParent > 1)
 		{
+			// FROM WIKIPEDIA:
 			// The rebalancing is performed differently :
-			//	Right Right	- X is rebalanced with a simple	rotation rotate_Left (see figure 2)
-			//	Left Left	- X is rebalanced with a simple	rotation rotate_Right (mirror - image of figure 2)
-			//	Right Left	- X is rebalanced with a double	rotation rotate_RightLeft (see figure 3)
-			//	Left Right	- X is rebalanced with a double	rotation rotate_LeftRight (mirror - image of figure 3)
+			//	Right Right	- X is rebalanced with a simple	rotation rotate_Left
+			//	Left Left	- X is rebalanced with a simple	rotation rotate_Right
+			//	Right Left	- X is rebalanced with a double	rotation rotate_RightLeft
+			//	Left Right	- X is rebalanced with a double	rotation rotate_LeftRight
 
 			if (parentNode->getRight() == currNode && currNode->getBf() >= 0) // Right Right	- Z is a right	child of its parent X and BF(Z) >= 0
 			{
