@@ -2,63 +2,57 @@
 #include <cstddef>
 #include <iostream>
 
-template<typename T>
+template <typename T>
 class AVLNode
 {
 public:
-	
 	explicit AVLNode(
-		const T& data
-	)
-		:
-		data(data),
-		left(nullptr),
-		right(nullptr),
-		parent(nullptr),
-		bf(0) // each node inserted starts off with balance factor of 0 since it is a leaf node (no left or right trees available yet)
+		const T &data)
+		: data(data),
+		  left(nullptr),
+		  right(nullptr),
+		  parent(nullptr),
+		  bf(0) // each node inserted starts off with balance factor of 0 since it is a leaf node (no left or right trees available yet)
 	{
 	}
 
 	explicit AVLNode(
-		const T& data,
-		AVLNode* parent
-	)
-		:
-		data(data),
-		parent(parent),
-		bf(0),
-		left(nullptr),
-		right(nullptr)
+		const T &data,
+		AVLNode *parent)
+		: data(data),
+		  parent(parent),
+		  bf(0),
+		  left(nullptr),
+		  right(nullptr)
 	{
+	}
 
-	}
-	
-	~AVLNode()
-	{
-		if (!left)
-			left = nullptr;
-		if (!right)
-			right = nullptr;
-		if (!parent)
-			parent = nullptr;
-	}
+	// ~AVLNode()
+	// {
+	// 	if (left)
+	// 		left = nullptr;
+	// 	if (right)
+	// 		right = nullptr;
+	// 	if (parent)
+	// 		parent = nullptr;
+	// }
 
 	inline const signed char getBf() const
 	{
 		return bf;
 	}
 
-	inline void setLeft(AVLNode* newLeft)
+	inline void setLeft(AVLNode *newLeft)
 	{
 		this->left = newLeft;
 	}
-	
-	inline void setRight(AVLNode* newRight)
+
+	inline void setRight(AVLNode *newRight)
 	{
 		this->right = newRight;
 	}
 
-	inline void setParent(AVLNode* newParent)
+	inline void setParent(AVLNode *newParent)
 	{
 		this->parent = newParent;
 	}
@@ -68,17 +62,17 @@ public:
 		this->bf = newBf;
 	}
 
-	const T& getData() const
+	inline const T &getData() const
 	{
 		return data;
 	}
 
-	bool operator==(const AVLNode& otherData) const
+	inline bool operator==(const AVLNode &otherData) const
 	{
 		return data == otherData.getData();
 	}
 
-	bool operator==(AVLNode* otherData) const
+	inline bool operator==(AVLNode *otherData) const
 	{
 		return data == otherData->getData();
 	}
@@ -110,17 +104,17 @@ public:
 		return false;
 	}
 
-	inline AVLNode* getLeft()
+	inline AVLNode *getLeft()
 	{
 		return left;
 	}
 
-	inline AVLNode* getRight()
+	inline AVLNode *getRight()
 	{
 		return right;
 	}
 
-	inline AVLNode* getParent()
+	inline AVLNode *getParent()
 	{
 		return parent;
 	}
@@ -156,9 +150,9 @@ public:
 	}
 
 private:
-	const T data; // data present in the node
-	AVLNode* left; // pointer to left node
-	AVLNode* right; // pointer to right node
-	AVLNode* parent; // pointer to parent node
-	signed char bf; // balance factor of current node 
+	const T data;	 // data present in the node
+	AVLNode *left;	 // pointer to left node
+	AVLNode *right;	 // pointer to right node
+	AVLNode *parent; // pointer to parent node
+	signed char bf;	 // balance factor of current node
 };

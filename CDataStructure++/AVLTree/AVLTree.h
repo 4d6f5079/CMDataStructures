@@ -43,17 +43,145 @@ public:
 		}
 	}
 
+	// TODO: implement deletion of node
+	// Should be the same way as with deletion in BST.
+	// Some things that should be implemented differently:
+	// 	1: The BF value of the removed node should be taken over to the node that it is replaced with
+	// 		So the BF of successor node should be replaced with the BF of the removed node
+	//	2: After deletion, the parent before deletion of the node that is used to replace the deleted
+	//		node should be used to recursivly update BF values of parent nodes until BF of -1 or 1 is found
 	AVLNode<T> *removeNode(
 		const T &data,
 		AVLNode<T> *currNode)
 	{
-		// TODO: implement deletion of node
-		// Should be the same way as with deletion in BST.
-		// Some things that should be implemented differently:
-		// 	1: The BF value of the removed node should be taken over to the node that it is replaced with
-		// 		So the BF of successor node should be replaced with the BF of the removed node
-		//	2: After deletion, the parent before deletion of the node that is used to replace the deleted
-		//		node should be used to recursivly update BF values of parent nodes until BF of -1 or 1 is found
+		if (currNode == nullptr)
+		{
+			return nullptr;
+		}
+
+		if (data < currNode->getData())
+		{
+			return removeNode(data, currNode->getLeft());
+		}
+		else if (data > currNode->getData())
+		{
+			return removeNode(data, currNode->getRight());
+		}
+		else
+		{
+			// Current node contains the given data.
+			// There are 4 options for deletion:
+			//	1: currNode has no children -> let the parent point to nullptr and then delete the currNode
+			//	2: currNode has only left child -> make left child the new currNode and delete the old currNode
+			//	3: currNode has only right child -> make the parent left/right ref point to right child the currNode and delete the old currNode
+			//	4: currNode has both children:
+			//		4.1: if the direct right node of currNode does not have a left child, then:
+			//			4.1.1: make the right node the new currNode
+			//			4.1.2: make the child of new currNode the left child of old currNode
+			//			4.1.3: make parent node point to new currNode
+			//			4.1.4: delete old currNode
+			//		4.2: if the direct right node of currNode does have a left child, then search for inorder successor node by traversing to the deepest left node
+			//		4.3: make successor the new root of the tree
+			//			4.3.1: if successor has right child, make the left child of parent of the successor point to that child
+			if (currNode->getParent() == nullptr) // root contains the value we need to remove
+			{
+				if (!currNode->hasLeft() && !currNode->hasRight())
+				{
+					delete root;
+					root = nullptr;
+					return root;
+				}
+				else if (!currNode->hasRight() && currNode->hasLeft())
+				{
+					AVLNode<T> *leftOfCurrNode = currNode->getLeft(); // get left child of root
+					leftOfCurrNode->setParent(nullptr);				  // set parent of left child to nullptr
+					leftOfCurrNode->setBf(root->getBf());			  // set bf to value of root
+					root = leftOfCurrNode;							  // assign root to left child
+					delete currNode;								  // delete previous root
+					currNode = nullptr;
+					return root; // return root
+				}
+				else if (currNode->hasRight() && !currNode->hasLeft())
+				{
+					AVLNode<T> *rightOfCurrNode = currNode->getRight(); // get right child of root
+					rightOfCurrNode->setParent(nullptr);				// set parent of right child to nullptr
+					rightOfCurrNode->setBf(root->getBf());				// set bf to value of root
+					root = rightOfCurrNode;								// assign root to right child
+					delete currNode;									// delete previous root
+					currNode = nullptr;
+					return root; // return root
+				}
+				else
+				{
+					AVLNode<T> *inorderSuccessorNode = findInorderSuccessor(currNode);
+					AVLNode<T> *parentInorderSuccessorNode = inorderSuccessorNode->getParent();
+
+					// successor node is the direct right node from the root
+					if (inorderSuccessorNode == currNode->getRight())
+					{
+						inorderSuccessorNode->setLeft(root->getLeft());
+						inorderSuccessorNode->setParent(nullptr);
+						root = inorderSuccessorNode;
+						delete currNode;
+					}
+					else // successor node is somewhere in the tree
+					{
+						AVLNode<T> *rightOfSuccessorNode = inorderSuccessorNode->getRight();
+						parentInorderSuccessorNode->setLeft(rightOfSuccessorNode);
+						if (rightOfSuccessorNode != nullptr)
+						{
+							rightOfSuccessorNode->setParent(parentInorderSuccessorNode);
+						}
+						inorderSuccessorNode->setLeft(root->getLeft());
+						inorderSuccessorNode->setRight(root->getRight());
+						inorderSuccessorNode->setParent(nullptr);
+						root = inorderSuccessorNode;
+						delete currNode;
+					}
+
+					currNode = nullptr;
+				}
+			}
+			else
+			{
+				AVLNode<T> *parentNode = currNode->getParent();
+
+				if (!currNode->hasLeft() && !currNode->hasRight())
+				{
+					setChildFromParent(parentNode, currNode, nullptr);
+					delete currNode;
+				}
+				else if (!currNode->hasRight() && currNode->hasLeft())
+				{
+					setChildFromParent(parentNode, currNode, currNode->getLeft());
+					delete currNode;
+				}
+				else if (currNode->hasRight() && !currNode->hasLeft())
+				{
+					setChildFromParent(parentNode, currNode, currNode->getRight());
+					delete currNode;
+				}
+				else
+				{
+					AVLNode<T> *inorderSuccessorNode = findInorderSuccessor(currNode);
+
+					if (inorderSuccessorNode == currNode->getRight())
+					{
+						nodeSuccessor->setLeft(currNode->getLeft());
+						setChildFromParent(parentNode, currNode, nodeSuccessor);
+						delete currNode;
+					}
+					else
+					{
+						parentSuccessor->setLeft(nodeSuccessor->getRight());
+						nodeSuccessor->setLeft(currNode->getLeft());
+						nodeSuccessor->setRight(currNode->getRight());
+						setChildFromParent(parentNode, currNode, nodeSuccessor);
+						delete currNode;
+					}
+				}
+			}
+		}
 	}
 
 	/*
@@ -61,7 +189,7 @@ public:
 	 */
 	void removeNode(const T &data)
 	{
-		const auto parentRemovedNodeRef = removeNode(data, root);
+		auto parentRemovedNodeRef = removeNode(data, root);
 
 		if (parentRemovedNodeRef)
 			rebalanceTree(parentRemovedNodeRef);
@@ -291,7 +419,6 @@ public:
 
 	AVLNode<T> *insertNode(
 		const T &data,
-		AVLNode<T> *parentNode,
 		AVLNode<T> *currNode)
 	{
 		if (root == nullptr)
@@ -306,7 +433,7 @@ public:
 				if (currNode->hasLeft())
 				{
 					// return insertNode(data, currNode, currNode->getLeft(), height + 1);
-					return insertNode(data, currNode, currNode->getLeft());
+					return insertNode(data, currNode->getLeft());
 				}
 				else
 				{
@@ -320,7 +447,7 @@ public:
 				if (currNode->hasRight())
 				{
 					// return insertNode(data, currNode, currNode->getRight(), height + 1);
-					return insertNode(data, currNode, currNode->getRight());
+					return insertNode(data, currNode->getRight());
 				}
 				else
 				{
@@ -338,10 +465,10 @@ public:
 	void insertNode(const T &data)
 	{
 		// const auto insertedNodeRef = insertNode(data, nullptr, root, 0);
-		const auto insertedNodeRef = insertNode(data, nullptr, root);
+		const auto insertedNodeRef = insertNode(data, root);
 
 		if (insertedNodeRef)
-			rebalanceTree(insertedNodeRef);
+			rebalanceTreeInsertion(insertedNodeRef);
 	}
 
 	AVLNode<T> *getRoot()
@@ -415,12 +542,24 @@ private:
 		return nullptr;
 	}
 
-	inline void rebalanceTree(AVLNode<T> *parentNode, AVLNode<T> *currNode, const signed char bfDiff)
+	// TODO: Stop with insertion if you encounter bf value of 0 and NOT only
+	// when you have to fix an unbalanced (sub-)tree
+	inline void rebalanceTree(
+		AVLNode<T> *parentNode,
+		AVLNode<T> *currNode,
+		const signed char bfDiff)
 	{
 		// increment/decrement bf value of parent node
 		parentNode->setBf(parentNode->getBf() + bfDiff);
 
 		const auto bfParent = parentNode->getBf();
+
+		// Insertion: stop if during insertion and after modifying bf value of parent
+		// the bf value becomes 0
+		if (bfParent == 0)
+		{
+			return;
+		}
 
 		// the parent has unbalanced subtrees (invariant is violated)
 		if (bfParent < -1 || bfParent > 1)
@@ -496,29 +635,64 @@ private:
 			// as the increment or decrement of the bf value depends on whether we go up from the right of the left node.
 			if (isRightChild(parentParentNode, parentNode))
 			{
-				return rebalanceTree(parentParentNode, parentNode, RIGHT_INCREMENT);
+				return rebalanceTree(parentParentNode, parentNode, INCREMENT_BF);
 			}
 			else
 			{
-				return rebalanceTree(parentParentNode, parentNode, LEFT_DECREMENT);
+				return rebalanceTree(parentParentNode, parentNode, DECREMENT_BF);
 			}
 		}
 	}
 
-	void rebalanceTree(AVLNode<T> *insertedNode)
+	void rebalanceTreeDeletion(AVLNode<T> *parentDeletedNode, const signed char bfDiff)
+	{ // TODO:
+		// increment/decrement bf value of parent node
+		parentNode->setBf(parentNode->getBf() + bfDiff);
+
+		const auto bfParent = parentNode->getBf();
+
+		// Deletion: stop if after deletion of node and modifying bf value of parent of the deleted
+		// node the bf value becomes -1 or +1
+		if (bfParent == -1 || bfParent == 1)
+		{
+			return;
+		}
+	}
+
+	void rebalanceTreeDeletion(AVLNode<T> *parentDeletedNode)
 	{
-		AVLNode<T> *parentCurrNode = insertedNode->getParent();
+		AVLNode<T> *parentCurrNode = ; // TODO:
 		if (parentCurrNode != nullptr)
 		{
 			if (isRightChild(parentCurrNode, insertedNode))
 			{
 				// if node is inserted to the right, then add 1 to direct parent node
-				rebalanceTree(parentCurrNode, insertedNode, RIGHT_INCREMENT);
+				rebalanceTree(parentCurrNode, DECREMENT_BF);
 			}
 			else
 			{
 				// if node is inserted to the left, then subtract 1 to direct parent node
-				rebalanceTree(parentCurrNode, insertedNode, LEFT_DECREMENT);
+				rebalanceTree(parentCurrNode, INCREMENT_BF);
+			}
+		}
+	}
+
+	void rebalanceTreeInsertion(AVLNode<T> *insertedNode)
+	{
+		AVLNode<T> *parentCurrNode = insertedNode->getParent();
+
+		// if the root is inserted, then no updates are needed since the tree is already balanced.
+		if (parentCurrNode != nullptr)
+		{
+			if (isRightChild(parentCurrNode, insertedNode))
+			{
+				// if node is inserted to the right, then add 1 to direct parent node
+				rebalanceTree(parentCurrNode, insertedNode, INCREMENT_BF);
+			}
+			else
+			{
+				// if node is inserted to the left, then subtract 1 to direct parent node
+				rebalanceTree(parentCurrNode, insertedNode, DECREMENT_BF);
 			}
 		}
 	}
@@ -574,6 +748,6 @@ private:
 
 private:
 	AVLNode<T> *root;
-	constexpr signed char RIGHT_INCREMENT = 1;
-	constexpr signed char LEFT_DECREMENT = -1;
+	const signed char INCREMENT_BF = 1;
+	const signed char DECREMENT_BF = -1;
 };
