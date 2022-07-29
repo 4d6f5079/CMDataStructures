@@ -83,6 +83,10 @@ public:
 			//		4.2: if the direct right node of currNode does have a left child, then search for inorder successor node by traversing to the deepest left node
 			//		4.3: make successor the new root of the tree
 			//			4.3.1: if successor has right child, make the left child of parent of the successor point to that child
+
+			// TODO: this if statement is only done to change root pointer which is not possible
+			// by changing the currNode pointer. See if somehow reference of pointer can be passed instead
+			// to change the copy of the pointer outside of the function to point somewhere else.
 			if (currNode->getParent() == nullptr) // root contains the value we need to remove
 			{
 				if (!currNode->hasLeft() && !currNode->hasRight())
@@ -117,29 +121,34 @@ public:
 					AVLNode<T> *parentInorderSuccessorNode = inorderSuccessorNode->getParent();
 
 					// successor node is the direct right node from the root
-					if (inorderSuccessorNode == currNode->getRight())
+					if (inorderSuccessorNode == currNode->getRight()) // TODO: see edge case
 					{
-						inorderSuccessorNode->setLeft(root->getLeft());
-						inorderSuccessorNode->setParent(nullptr);
-						root = inorderSuccessorNode;
-						delete currNode;
+						inorderSuccessorNode->setLeft(root->getLeft()); // set left of successor to left subtree of root
+						inorderSuccessorNode->setParent(nullptr);		// parent is now nullptr since successor is new root
+						inorderSuccessorNode->setBf(root->getBf());		// bf value should be same as inorder successor
+						root = inorderSuccessorNode;					// assign root to inorder successor
+						delete currNode;								// delete previous root
+						currNode = nullptr;
+						return root; // return the inorder successor
 					}
 					else // successor node is somewhere in the tree
 					{
 						AVLNode<T> *rightOfSuccessorNode = inorderSuccessorNode->getRight();
-						parentInorderSuccessorNode->setLeft(rightOfSuccessorNode);
+						parentInorderSuccessorNode->setLeft(rightOfSuccessorNode); // set left of parent successor to right of successor
+						// if successor has right node, then make parent of right node the parent of successor
 						if (rightOfSuccessorNode != nullptr)
 						{
 							rightOfSuccessorNode->setParent(parentInorderSuccessorNode);
 						}
-						inorderSuccessorNode->setLeft(root->getLeft());
-						inorderSuccessorNode->setRight(root->getRight());
-						inorderSuccessorNode->setParent(nullptr);
-						root = inorderSuccessorNode;
-						delete currNode;
+						inorderSuccessorNode->setLeft(root->getLeft());	  // set left subtree of prev. root to new root
+						inorderSuccessorNode->setRight(root->getRight()); // set right subtree of prev. root to new root
+						inorderSuccessorNode->setParent(nullptr);		  // set parent of inorder successor to nullptr since it is now the root
+						inorderSuccessorNode->setBf(root->getBf());		  // bf value should be same as inorder successor
+						root = inorderSuccessorNode;					  // set inorder successor as the new root
+						delete currNode;								  // delete previous root
+						currNode = nullptr;
+						return parentInorderSuccessorNode; // return parent of successor since the parent is not the root
 					}
-
-					currNode = nullptr;
 				}
 			}
 			else
@@ -148,18 +157,28 @@ public:
 
 				if (!currNode->hasLeft() && !currNode->hasRight())
 				{
-					setChildFromParent(parentNode, currNode, nullptr);
-					delete currNode;
+					setChildFromParent(parentNode, currNode, nullptr); // set parent node approperaite child to nullptr as it is deleted
+					delete currNode;								   // delete the node that needs to be deleted
+					currNode = nullptr;
+					return parentNode; // return parent node for rebalancing
 				}
 				else if (!currNode->hasRight() && currNode->hasLeft())
 				{
-					setChildFromParent(parentNode, currNode, currNode->getLeft());
-					delete currNode;
+					AVLNode<T> *leftCurrNode = currNode->getLeft();
+					leftCurrNode->setBf(currNode->getBf());					// set bf of left child to bf of currNode
+					setChildFromParent(parentNode, currNode, leftCurrNode); // update parent ref to point to the new child
+					delete currNode;										// delete currNode
+					currNode = nullptr;
+					return leftCurrNode; // return new child of the parent for rebalancing
 				}
 				else if (currNode->hasRight() && !currNode->hasLeft())
 				{
-					setChildFromParent(parentNode, currNode, currNode->getRight());
-					delete currNode;
+					AVLNode<T> *rightCurrNode = currNode->getRight();
+					rightCurrNode->setBf(currNode->getBf());				 // set bf of right child to bf of currNode
+					setChildFromParent(parentNode, currNode, rightCurrNode); // update parent ref to point to the new child
+					delete currNode;										 // delete currNode
+					currNode = nullptr;
+					return rightCurrNode; // return new child of the parent for rebalancing
 				}
 				else
 				{
@@ -544,7 +563,7 @@ private:
 
 	// TODO: Stop with insertion if you encounter bf value of 0 and NOT only
 	// when you have to fix an unbalanced (sub-)tree
-	inline void rebalanceTree(
+	inline void rebalanceTreeInsertion(
 		AVLNode<T> *parentNode,
 		AVLNode<T> *currNode,
 		const signed char bfDiff)
@@ -617,7 +636,7 @@ private:
 			}
 			else
 			{
-				std::cout << "[rebalanceTree] bfParent: " << bfParent << " , the else branch is reached which should not happen!";
+				std::cout << "[rebalanceTreeInsertion] bfParent: " << bfParent << " , the else branch is reached which should not happen!";
 			}
 		}
 		else // tree from parent node is balanced (invariant holds true), no need for rotation
@@ -635,11 +654,11 @@ private:
 			// as the increment or decrement of the bf value depends on whether we go up from the right of the left node.
 			if (isRightChild(parentParentNode, parentNode))
 			{
-				return rebalanceTree(parentParentNode, parentNode, INCREMENT_BF);
+				return rebalanceTreeInsertion(parentParentNode, parentNode, INCREMENT_BF);
 			}
 			else
 			{
-				return rebalanceTree(parentParentNode, parentNode, DECREMENT_BF);
+				return rebalanceTreeInsertion(parentParentNode, parentNode, DECREMENT_BF);
 			}
 		}
 	}
@@ -667,12 +686,12 @@ private:
 			if (isRightChild(parentCurrNode, insertedNode))
 			{
 				// if node is inserted to the right, then add 1 to direct parent node
-				rebalanceTree(parentCurrNode, DECREMENT_BF);
+				rebalanceTreeDeletion(parentCurrNode, DECREMENT_BF);
 			}
 			else
 			{
 				// if node is inserted to the left, then subtract 1 to direct parent node
-				rebalanceTree(parentCurrNode, INCREMENT_BF);
+				rebalanceTreeDeletion(parentCurrNode, INCREMENT_BF);
 			}
 		}
 	}
@@ -687,12 +706,12 @@ private:
 			if (isRightChild(parentCurrNode, insertedNode))
 			{
 				// if node is inserted to the right, then add 1 to direct parent node
-				rebalanceTree(parentCurrNode, insertedNode, INCREMENT_BF);
+				rebalanceTreeInsertion(parentCurrNode, insertedNode, INCREMENT_BF);
 			}
 			else
 			{
 				// if node is inserted to the left, then subtract 1 to direct parent node
-				rebalanceTree(parentCurrNode, insertedNode, DECREMENT_BF);
+				rebalanceTreeInsertion(parentCurrNode, insertedNode, DECREMENT_BF);
 			}
 		}
 	}
