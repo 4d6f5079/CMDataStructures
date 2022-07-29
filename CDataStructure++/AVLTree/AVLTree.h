@@ -3,10 +3,14 @@
 #include <BinarySearchTree.h>
 #include <cstddef>
 #include <iostream>
+#include <utility>
 
 template <typename T>
 class AVLTree
 {
+public:
+	using _AVL_fromRight_Pair = std::pair<AVLNode<T> *, bool>;
+
 public:
 	AVLTree()
 		: root(nullptr)
@@ -50,13 +54,13 @@ public:
 	// 		So the BF of successor node should be replaced with the BF of the removed node
 	//	2: After deletion, the parent before deletion of the node that is used to replace the deleted
 	//		node should be used to recursivly update BF values of parent nodes until BF of -1 or 1 is found
-	AVLNode<T> *removeNode(
+	_AVL_fromRight_Pair removeNode(
 		const T &data,
 		AVLNode<T> *currNode)
 	{
 		if (currNode == nullptr)
 		{
-			return nullptr;
+			return std::make_pair(nullptr, false);
 		}
 
 		if (data < currNode->getData())
@@ -93,7 +97,7 @@ public:
 				{
 					delete root;
 					root = nullptr;
-					return root;
+					return std::make_pair(root, false);
 				}
 				else if (!currNode->hasRight() && currNode->hasLeft())
 				{
@@ -103,7 +107,7 @@ public:
 					root = leftOfCurrNode;							  // assign root to left child
 					delete currNode;								  // delete previous root
 					currNode = nullptr;
-					return root; // return root
+					return std::make_pair(root, false); // return pair with root and fromRight bool
 				}
 				else if (currNode->hasRight() && !currNode->hasLeft())
 				{
@@ -113,11 +117,11 @@ public:
 					root = rightOfCurrNode;								// assign root to right child
 					delete currNode;									// delete previous root
 					currNode = nullptr;
-					return root; // return root
+					return std::make_pair(root, true); // return pair with root and fromRight bool
 				}
 				else
 				{
-					AVLNode<T> *inorderSuccessorNode = findInorderSuccessor(currNode);
+					AVLNode<T> *inorderSuccessorNode = findInorderSuccessor(currNode->getRight());
 					AVLNode<T> *parentInorderSuccessorNode = inorderSuccessorNode->getParent();
 
 					// successor node is the direct right node from the root
@@ -129,7 +133,7 @@ public:
 						root = inorderSuccessorNode;					// assign root to inorder successor
 						delete currNode;								// delete previous root
 						currNode = nullptr;
-						return root; // return the inorder successor
+						return std::make_pair(root, true); // return pair with inorder successor and fromRight bool
 					}
 					else // successor node is somewhere in the tree
 					{
@@ -147,7 +151,7 @@ public:
 						root = inorderSuccessorNode;					  // set inorder successor as the new root
 						delete currNode;								  // delete previous root
 						currNode = nullptr;
-						return parentInorderSuccessorNode; // return parent of successor since the parent is not the root
+						return std::make_pair(parentInorderSuccessorNode, false); // return parent of successor with fromRight false since it is always the left child
 					}
 				}
 			}
@@ -160,7 +164,7 @@ public:
 					setChildFromParent(parentNode, currNode, nullptr); // set parent node approperaite child to nullptr as it is deleted
 					delete currNode;								   // delete the node that needs to be deleted
 					currNode = nullptr;
-					return parentNode; // return parent node for rebalancing
+					return std::make_pair(parentNode, false); // return parent node for rebalancing, fromRight bool does not matter
 				}
 				else if (!currNode->hasRight() && currNode->hasLeft())
 				{
@@ -169,7 +173,7 @@ public:
 					setChildFromParent(parentNode, currNode, leftCurrNode); // update parent ref to point to the new child
 					delete currNode;										// delete currNode
 					currNode = nullptr;
-					return leftCurrNode; // return new child of the parent for rebalancing
+					return std::make_pair(leftCurrNode, false); // return new child of the parent for rebalancing with fromRight false
 				}
 				else if (currNode->hasRight() && !currNode->hasLeft())
 				{
@@ -178,11 +182,11 @@ public:
 					setChildFromParent(parentNode, currNode, rightCurrNode); // update parent ref to point to the new child
 					delete currNode;										 // delete currNode
 					currNode = nullptr;
-					return rightCurrNode; // return new child of the parent for rebalancing
+					return std::make_pair(rightCurrNode, true); // return new child of the parent for rebalancing with fromRight is true
 				}
 				else
 				{
-					AVLNode<T> *inorderSuccessorNode = findInorderSuccessor(currNode);
+					AVLNode<T> *inorderSuccessorNode = findInorderSuccessor(currNode->getRight());
 					AVLNode<T> *parentInorderSuccessorNode = inorderSuccessorNode->getParent();
 
 					// successor node is the direct right node from the root
@@ -194,7 +198,7 @@ public:
 						setChildFromParent(parentNode, currNode, inorderSuccessorNode);
 						delete currNode; // delete currNode
 						currNode = nullptr;
-						return inorderSuccessorNode; // return the inorder successor
+						return std::make_pair(inorderSuccessorNode, true); // return pair with inorder successor and fromRight bool
 					}
 					else // successor node is somewhere in the tree
 					{
@@ -212,7 +216,7 @@ public:
 						setChildFromParent(parentNode, currNode, inorderSuccessorNode); // set inorder successor as the new root
 						delete currNode;												// delete previous root
 						currNode = nullptr;
-						return parentInorderSuccessorNode; // return parent of successor since the parent is not the root
+						return std::make_pair(parentInorderSuccessorNode, false); // return parent of successor with fromRight false since it is always the left child
 					}
 				}
 			}
@@ -224,10 +228,12 @@ public:
 	 */
 	void removeNode(const T &data)
 	{
-		auto parentRemovedNodeRef = removeNode(data, root);
+		_AVL_fromRight_Pair retValue = removeNode(data, root);
+		auto parentRemovedNodeRef = retValue.first;
+		auto isDeletedFromRightTree = retValue.second;
 
 		if (parentRemovedNodeRef)
-			rebalanceTree(parentRemovedNodeRef);
+			rebalanceTreeDeletion(parentRemovedNodeRef, isDeletedFromRightTree);
 	}
 
 	/*
@@ -577,8 +583,6 @@ private:
 		return nullptr;
 	}
 
-	// TODO: Stop with insertion if you encounter bf value of 0 and NOT only
-	// when you have to fix an unbalanced (sub-)tree
 	inline void rebalanceTreeInsertion(
 		AVLNode<T> *parentNode,
 		AVLNode<T> *currNode,
@@ -679,36 +683,114 @@ private:
 		}
 	}
 
-	void rebalanceTreeDeletion(AVLNode<T> *parentDeletedNode, const signed char bfDiff)
-	{ // TODO:
-		// increment/decrement bf value of parent node
-		parentNode->setBf(parentNode->getBf() + bfDiff);
-
-		const auto bfParent = parentNode->getBf();
-
-		// Deletion: stop if after deletion of node and modifying bf value of parent of the deleted
-		// node the bf value becomes -1 or +1
-		if (bfParent == -1 || bfParent == 1)
+	void rebalanceTreeDeletion(AVLNode<T> *currNode, const signed char bfDiff) // TODO:
+	{
+		if (currNode == nullptr)
 		{
 			return;
 		}
-	}
 
-	void rebalanceTreeDeletion(AVLNode<T> *parentDeletedNode)
-	{
-		AVLNode<T> *parentCurrNode = ; // TODO:
-		if (parentCurrNode != nullptr)
+		// increment/decrement bf value of parent node
+		currNode->setBf(currNode->getBf() + bfDiff);
+
+		const auto currNodeBf = currNode->getBf();
+
+		// Deletion: stop if after deletion of node and modifying bf value of parent of the deleted
+		// node the bf value becomes -1 or +1
+		if (currNodeBf == -1 || currNodeBf == 1)
 		{
-			if (isRightChild(parentCurrNode, insertedNode))
+			return;
+		}
+		// the parent has unbalanced subtrees and is left-heavy (invariant is violated)
+		// taking left child as child node for rotation
+		else if (currNodeBf < -1)
+		{
+			AVLNode<T> *currNodeLeft = currNode->getLeft();
+			const auto currNodeLeftBf = currNodeLeft->getBf();
+
+			if (currNodeLeftBf <= 0) // Left Left	- Z is a left	child of its parent X and BF(Z) <= 0
 			{
-				// if node is inserted to the right, then add 1 to direct parent node
-				rebalanceTreeDeletion(parentCurrNode, DECREMENT_BF);
+				if (currNode == root)
+				{
+					root = rotateRight(currNode, currNodeLeft);
+				}
+				else
+				{
+					rotateRight(currNode, currNodeLeft);
+				}
+			}
+			else if (currNodeLeftBf > 0) // Left Right	- Z is a left	child of its parent X and BF(Z) > 0
+			{
+				if (currNode == root)
+				{
+					root = rotateLeftRight(currNode, currNodeLeft);
+				}
+				else
+				{
+					rotateLeftRight(currNode, currNodeLeft);
+				}
 			}
 			else
 			{
-				// if node is inserted to the left, then subtract 1 to direct parent node
-				rebalanceTreeDeletion(parentCurrNode, INCREMENT_BF);
+				std::cout << "[rebalanceTreeDeletion] {currNodeBf < -1} should not ever come here. Bug detected";
 			}
+		}
+		// the parent has unbalanced subtrees and is right-heavy (invariant is violated)
+		else if (currNodeBf > 1)
+		{
+			AVLNode<T> *currNodeRight = currNode->getRight();
+			const auto currNodeRightBf = currNodeRight->getBf();
+
+			if (currNodeRightBf >= 0) // Right Right	- Z is a right	child of its parent X and BF(Z) >= 0
+			{
+				if (currNode == root)
+				{
+					root = rotateLeft(currNode, currNodeRight);
+				}
+				else
+				{
+					rotateLeft(currNode, currNodeRight);
+				}
+			}
+			else if (currNodeRightBf < 0) // Right Left	- Z is a right	child of its parent X and BF(Z) < 0
+			{
+				if (currNode == root)
+				{
+					root = rotateRightLeft(currNode, currNodeRight);
+				}
+				else
+				{
+					rotateRightLeft(currNode, currNodeRight);
+				}
+			}
+			else
+			{
+				std::cout << "[rebalanceTreeDeletion] {currNodeBf > 1} should not ever come here. Bug detected";
+			}
+		}
+
+		AVLNode<T> *nextParent = currNode->getParent();
+		if (isRightChild(nextParent, currNode))
+		{
+			return rebalanceTreeDeletion(nextParent, DECREMENT_BF);
+		}
+		else
+		{
+			return rebalanceTreeDeletion(nextParent, INCREMENT_BF);
+		}
+	}
+
+	void rebalanceTreeDeletion(AVLNode<T> *parentDeletedNode, bool rightIsDeleted)
+	{
+		if (rightIsDeleted)
+		{
+			// if node is deleted from the right subtree, then subtract 1 to current parent node
+			rebalanceTreeDeletion(parentDeletedNode, DECREMENT_BF);
+		}
+		else
+		{
+			// if node is deleted from the left subtree, then increment 1 to current parent node
+			rebalanceTreeDeletion(parentDeletedNode, INCREMENT_BF);
 		}
 	}
 

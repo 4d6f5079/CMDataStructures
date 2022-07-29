@@ -178,10 +178,13 @@ int testAVLTree()
 	t.insertNode(24);
 	t.insertNode(25);
 	t.insertNode(26);
-	std::cout << t.findInorderSuccessor(t.getRoot()->getRight())->getData() << std::endl;
-	std::cout << t.findInorderSuccessor(t.getRoot()->getRight())->getLeft() << std::endl;
-	std::cout << t.findInorderSuccessor(t.getRoot()->getRight())->getRight() << std::endl;
-	std::cout << t.findInorderSuccessor(t.getRoot()->getRight())->getParent() << std::endl;
+
+	t.printTree();
+	t.removeNode(20);
+	t.printTree();
+	t.removeNode(99);
+	t.printTree();
+	t.removeNode(6);
 	t.printTree();
 
 	return 0;
