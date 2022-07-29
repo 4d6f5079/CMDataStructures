@@ -696,6 +696,10 @@ private:
 
 		const auto currNodeBf = currNode->getBf();
 
+		// This variable is only used when a rotation happened because of unbalanced tree
+		// In this case next parent would be parent of returned node after rotation.
+		AVLNode<T> *nextParentAfterRotation = nullptr;
+
 		// Deletion: stop if after deletion of node and modifying bf value of parent of the deleted
 		// node the bf value becomes -1 or +1
 		if (currNodeBf == -1 || currNodeBf == 1)
@@ -714,10 +718,11 @@ private:
 				if (currNode == root)
 				{
 					root = rotateRight(currNode, currNodeLeft);
+					nextParentAfterRotation = root;
 				}
 				else
 				{
-					rotateRight(currNode, currNodeLeft);
+					nextParentAfterRotation = rotateRight(currNode, currNodeLeft);
 				}
 			}
 			else if (currNodeLeftBf > 0) // Left Right	- Z is a left	child of its parent X and BF(Z) > 0
@@ -725,10 +730,11 @@ private:
 				if (currNode == root)
 				{
 					root = rotateLeftRight(currNode, currNodeLeft);
+					nextParentAfterRotation = root;
 				}
 				else
 				{
-					rotateLeftRight(currNode, currNodeLeft);
+					nextParentAfterRotation = rotateLeftRight(currNode, currNodeLeft);
 				}
 			}
 			else
@@ -747,10 +753,11 @@ private:
 				if (currNode == root)
 				{
 					root = rotateLeft(currNode, currNodeRight);
+					nextParentAfterRotation = root;
 				}
 				else
 				{
-					rotateLeft(currNode, currNodeRight);
+					nextParentAfterRotation = rotateLeft(currNode, currNodeRight);
 				}
 			}
 			else if (currNodeRightBf < 0) // Right Left	- Z is a right	child of its parent X and BF(Z) < 0
@@ -758,10 +765,11 @@ private:
 				if (currNode == root)
 				{
 					root = rotateRightLeft(currNode, currNodeRight);
+					nextParentAfterRotation = root;
 				}
 				else
 				{
-					rotateRightLeft(currNode, currNodeRight);
+					nextParentAfterRotation = rotateRightLeft(currNode, currNodeRight);
 				}
 			}
 			else
@@ -770,7 +778,19 @@ private:
 			}
 		}
 
-		AVLNode<T> *nextParent = currNode->getParent();
+		AVLNode<T> *nextParent = nullptr;
+
+		if (nextParentAfterRotation == nullptr)
+		{
+			// no rotation has occured, continue with parent of current node
+			nextParent = currNode->getParent();
+		}
+		else
+		{
+			// a rotation has occured, continue with parent of returned rotated node
+			nextParent = nextParentAfterRotation->getParent();
+		}
+
 		if (nextParent != nullptr)
 		{
 			if (isRightChild(nextParent, currNode))
