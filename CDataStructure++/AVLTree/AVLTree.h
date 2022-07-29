@@ -161,10 +161,11 @@ public:
 
 				if (!currNode->hasLeft() && !currNode->hasRight())
 				{
-					setChildFromParent(parentNode, currNode, nullptr); // set parent node approperaite child to nullptr as it is deleted
-					delete currNode;								   // delete the node that needs to be deleted
+					const auto isRightNode = isRightChild(parentNode, currNode); // make sure correct fromRight value is given as it can be right/left depending on parent ref
+					setChildFromParent(parentNode, currNode, nullptr);			 // set parent node approperaite child to nullptr as it is deleted
+					delete currNode;											 // delete the node that needs to be deleted
 					currNode = nullptr;
-					return std::make_pair(parentNode, false); // return parent node for rebalancing, fromRight bool does not matter
+					return std::make_pair(parentNode, isRightNode); // return parent node for rebalancing, fromRight bool does not matter
 				}
 				else if (!currNode->hasRight() && currNode->hasLeft())
 				{
@@ -770,13 +771,16 @@ private:
 		}
 
 		AVLNode<T> *nextParent = currNode->getParent();
-		if (isRightChild(nextParent, currNode))
+		if (nextParent != nullptr)
 		{
-			return rebalanceTreeDeletion(nextParent, DECREMENT_BF);
-		}
-		else
-		{
-			return rebalanceTreeDeletion(nextParent, INCREMENT_BF);
+			if (isRightChild(nextParent, currNode))
+			{
+				return rebalanceTreeDeletion(nextParent, DECREMENT_BF);
+			}
+			else
+			{
+				return rebalanceTreeDeletion(nextParent, INCREMENT_BF);
+			}
 		}
 	}
 

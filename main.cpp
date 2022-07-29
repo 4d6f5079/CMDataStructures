@@ -145,7 +145,7 @@ int testingBinarySearchTree()
 	}
 }
 
-int testAVLTree()
+int testAVLTreeInsertionCases()
 {
 	AVLTree<int> t(9);
 	// t.insertNode(50);
@@ -158,34 +158,49 @@ int testAVLTree()
 	// t.insertNode(20);
 	// t.insertNode(25);
 	// t.insertNode(15);
-	t.insertNode(10);
-	t.insertNode(11);
-	t.insertNode(12);
-	t.insertNode(8);
-	t.insertNode(7);
-	t.insertNode(6);
-	t.insertNode(5);
-	t.insertNode(4);
-	t.insertNode(3);
-	t.insertNode(2);
-	t.insertNode(1);
-	t.insertNode(1);
-	t.insertNode(19);
-	t.insertNode(20);
-	t.insertNode(21);
-	t.insertNode(22);
-	t.insertNode(23);
-	t.insertNode(24);
-	t.insertNode(25);
-	t.insertNode(26);
 
+	// t.insertNode(10);
+	// t.insertNode(11);
+	// t.insertNode(12);
+	// t.insertNode(8);
+	// t.insertNode(7);
+	// t.insertNode(6);
+	// t.insertNode(5);
+	// t.insertNode(4);
+	// t.insertNode(3);
+	// t.insertNode(2);
+	// t.insertNode(1);
+	// t.insertNode(1);
+	// t.insertNode(19);
+	// t.insertNode(20);
+	// t.insertNode(21);
+	// t.insertNode(22);
+	// t.insertNode(23);
+	// t.insertNode(24);
+	// t.insertNode(25);
+	// t.insertNode(26);
+
+	return 0;
+}
+
+int testAVLTreeDeletionCases()
+{
+	AVLTree<int> t;
+
+	// Case 1: Root deletion -> tree becomes empty
+	std::cout << "Root deletion -> tree becomes empty \n";
+	t.insertNode(50);
+	t.removeNode(50);
 	t.printTree();
-	t.removeNode(20);
+	std::cout << "\n\n";
+
+	// Case 2: 2 nodes in tree (inc. root) -> delete right child -> only root in tree with bf 0
+	std::cout << "2 nodes in tree (inc. root) -> delete right child -> only root in tree with bf 0 \n";
+	t.insertNode(50);
+	t.insertNode(55);
+	t.removeNode(55);
 	t.printTree();
-	t.removeNode(99);
-	t.printTree();
-	t.removeNode(6);
-	t.printTree();
+	std::cout << "\n\n";
 
 	return 0;
 }
@@ -194,5 +209,5 @@ int main(int argc, char *argv[])
 {
 	// return testingHashTableWithBenchmark();
 	// return testingBinarySearchTree();
-	return testAVLTree();
+	return testAVLTreeDeletionCases();
 }
