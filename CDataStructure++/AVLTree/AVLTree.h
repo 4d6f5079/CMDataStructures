@@ -522,17 +522,17 @@ public:
 		return DFS(data, root);
 	}
 
-	inline AVLNode<T> *findInorderSuccessor(AVLNode<T> *currNode)
+	inline AVLNode<T> *findInorderSuccessor(AVLNode<T> *rightNodeOfCurrNode)
 	{
-		if (currNode != nullptr)
+		if (rightNodeOfCurrNode != nullptr)
 		{
-			if (currNode->hasLeft())
+			if (rightNodeOfCurrNode->hasLeft())
 			{
-				return findInorderSuccessor(currNode->getLeft());
+				return findInorderSuccessor(rightNodeOfCurrNode->getLeft());
 			}
 			else
 			{
-				return currNode;
+				return rightNodeOfCurrNode;
 			}
 		}
 
