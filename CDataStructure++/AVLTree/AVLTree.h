@@ -121,11 +121,11 @@ public:
 					AVLNode<T> *parentInorderSuccessorNode = inorderSuccessorNode->getParent();
 
 					// successor node is the direct right node from the root
-					if (inorderSuccessorNode == currNode->getRight()) // TODO: see edge case
+					if (inorderSuccessorNode == currNode->getRight())
 					{
 						inorderSuccessorNode->setLeft(root->getLeft()); // set left of successor to left subtree of root
 						inorderSuccessorNode->setParent(nullptr);		// parent is now nullptr since successor is new root
-						inorderSuccessorNode->setBf(root->getBf());		// bf value should be same as inorder successor
+						inorderSuccessorNode->setBf(root->getBf());		// bf value should be same as root node
 						root = inorderSuccessorNode;					// assign root to inorder successor
 						delete currNode;								// delete previous root
 						currNode = nullptr;
@@ -143,7 +143,7 @@ public:
 						inorderSuccessorNode->setLeft(root->getLeft());	  // set left subtree of prev. root to new root
 						inorderSuccessorNode->setRight(root->getRight()); // set right subtree of prev. root to new root
 						inorderSuccessorNode->setParent(nullptr);		  // set parent of inorder successor to nullptr since it is now the root
-						inorderSuccessorNode->setBf(root->getBf());		  // bf value should be same as inorder successor
+						inorderSuccessorNode->setBf(root->getBf());		  // bf value should be same as root node
 						root = inorderSuccessorNode;					  // set inorder successor as the new root
 						delete currNode;								  // delete previous root
 						currNode = nullptr;
@@ -183,20 +183,36 @@ public:
 				else
 				{
 					AVLNode<T> *inorderSuccessorNode = findInorderSuccessor(currNode);
+					AVLNode<T> *parentInorderSuccessorNode = inorderSuccessorNode->getParent();
 
+					// successor node is the direct right node from the root
 					if (inorderSuccessorNode == currNode->getRight())
 					{
-						nodeSuccessor->setLeft(currNode->getLeft());
-						setChildFromParent(parentNode, currNode, nodeSuccessor);
-						delete currNode;
+						inorderSuccessorNode->setLeft(currNode->getLeft()); // set left of successor to left subtree of currNode
+						inorderSuccessorNode->setParent(parentNode);		// parent is now parentNode
+						inorderSuccessorNode->setBf(currNode->getBf());		// bf value should be same as currNode
+						setChildFromParent(parentNode, currNode, inorderSuccessorNode);
+						delete currNode; // delete currNode
+						currNode = nullptr;
+						return inorderSuccessorNode; // return the inorder successor
 					}
-					else
+					else // successor node is somewhere in the tree
 					{
-						parentSuccessor->setLeft(nodeSuccessor->getRight());
-						nodeSuccessor->setLeft(currNode->getLeft());
-						nodeSuccessor->setRight(currNode->getRight());
-						setChildFromParent(parentNode, currNode, nodeSuccessor);
-						delete currNode;
+						AVLNode<T> *rightOfSuccessorNode = inorderSuccessorNode->getRight();
+						parentInorderSuccessorNode->setLeft(rightOfSuccessorNode); // set left of parent successor to right of successor
+						// if successor has right node, then make parent of right node the parent of successor
+						if (rightOfSuccessorNode != nullptr)
+						{
+							rightOfSuccessorNode->setParent(parentInorderSuccessorNode);
+						}
+						inorderSuccessorNode->setLeft(currNode->getLeft());				// set left subtree of prev. root to new root
+						inorderSuccessorNode->setRight(currNode->getRight());			// set right subtree of prev. root to new root
+						inorderSuccessorNode->setParent(parentNode);					// set parent of inorder successor to parentNode
+						inorderSuccessorNode->setBf(currNode->getBf());					// bf value should be same as inorder successor
+						setChildFromParent(parentNode, currNode, inorderSuccessorNode); // set inorder successor as the new root
+						delete currNode;												// delete previous root
+						currNode = nullptr;
+						return parentInorderSuccessorNode; // return parent of successor since the parent is not the root
 					}
 				}
 			}
