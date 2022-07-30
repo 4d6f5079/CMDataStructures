@@ -175,6 +175,7 @@ public:
 				else if (!currNode->hasRight() && currNode->hasLeft())
 				{
 					AVLNode<T> *leftCurrNode = currNode->getLeft();
+					leftCurrNode->setParent(parentNode);					// change parent of left child to parent of currNode
 					leftCurrNode->setBf(currNode->getBf());					// set bf of left child to bf of currNode
 					setChildFromParent(parentNode, currNode, leftCurrNode); // update parent ref to point to the new child
 					delete currNode;										// delete currNode
@@ -184,6 +185,7 @@ public:
 				else if (currNode->hasRight() && !currNode->hasLeft())
 				{
 					AVLNode<T> *rightCurrNode = currNode->getRight();
+					rightCurrNode->setParent(parentNode);					 // change parent of right child to parent of currNode
 					rightCurrNode->setBf(currNode->getBf());				 // set bf of right child to bf of currNode
 					setChildFromParent(parentNode, currNode, rightCurrNode); // update parent ref to point to the new child
 					delete currNode;										 // delete currNode
