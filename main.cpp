@@ -261,6 +261,33 @@ int testAVLTreeDeletionCases()
 		std::cout << "\n\n";
 	}
 
+	// Case 7
+	{
+		AVLTree<int> t;
+		std::cout << "[Case 7] deleting root node (bf=-1) -> successor replaces the old root node -> the new bf value becomes -2 (unbalanced) -> balance by rotating right\n";
+		std::vector<int> insertionsInOrder = {9, 5, 12, -5, 7, 10, -10};
+		for (auto i = 0; i < insertionsInOrder.size(); ++i)
+		{
+			t.insertNode(insertionsInOrder.at(i));
+		}
+		t.removeNode(9);
+		t.printTree();
+		std::cout << "\n\n";
+	}
+
+	// Case 8
+	{
+		AVLTree<int> t;
+		std::cout << "[Case 8]  removing root with successor -> causes double rotation to occur since it becomes unbalanced\n";
+		std::vector<int> insertionsInOrder = {9, 6, 12, 4, 7, 10, 8};
+		for (auto i = 0; i < insertionsInOrder.size(); ++i)
+		{
+			t.insertNode(insertionsInOrder.at(i));
+		}
+		t.removeNode(9);
+		t.printTree();
+		std::cout << "\n\n";
+	}
 	// Edge Case 1
 	// {
 	// 	AVLTree<int> t;
