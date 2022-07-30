@@ -777,6 +777,10 @@ private:
 		{
 			// a rotation has occured, continue with parent of returned rotated node
 			nextParent = nextParentAfterRotation->getParent();
+			// assign currNode to node after rotation since currNode (where we are now) changes after rotation
+			// so this is done to keep parent and currNode aligned with each other so that isRightChild check is
+			// done correctly.
+			currNode = nextParentAfterRotation;
 		}
 
 		if (nextParent != nullptr)
