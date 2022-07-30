@@ -143,6 +143,12 @@ public:
 						{
 							rightOfSuccessorNode->setParent(parentInorderSuccessorNode);
 						}
+						// Set the parent of the successor node parent to the successor itself as it replaces the old root
+						// which, if the parent of successor node is not updated, will be deleted and parent will point to nullptr
+						if (parentInorderSuccessorNode->getParent() == root)
+						{
+							parentInorderSuccessorNode->setParent(inorderSuccessorNode);
+						}
 						inorderSuccessorNode->setLeft(root->getLeft());	  // set left subtree of prev. root to new root
 						inorderSuccessorNode->setRight(root->getRight()); // set right subtree of prev. root to new root
 						inorderSuccessorNode->setParent(nullptr);		  // set parent of inorder successor to nullptr since it is now the root
@@ -208,6 +214,12 @@ public:
 						if (rightOfSuccessorNode != nullptr)
 						{
 							rightOfSuccessorNode->setParent(parentInorderSuccessorNode);
+						}
+						// Set the parent of the successor node parent to the successor itself as it replaces the currNode
+						// which, if the parent of successor node is not updated, will be deleted and parent will point to nullptr
+						if (parentInorderSuccessorNode->getParent() == currNode)
+						{
+							parentInorderSuccessorNode->setParent(inorderSuccessorNode);
 						}
 						inorderSuccessorNode->setLeft(currNode->getLeft());				// set left subtree of prev. root to new root
 						inorderSuccessorNode->setRight(currNode->getRight());			// set right subtree of prev. root to new root

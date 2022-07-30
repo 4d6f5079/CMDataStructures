@@ -186,7 +186,7 @@ int testAVLTreeInsertionCases()
 int testAVLTreeDeletionCases()
 {
 
-	// Case 1: Root deletion -> tree becomes empty
+	// Case 1
 	{
 		AVLTree<int> t;
 		std::cout << "[Case 1] Root deletion -> tree becomes empty \n";
@@ -196,7 +196,7 @@ int testAVLTreeDeletionCases()
 		std::cout << "\n\n";
 	}
 
-	// Case 2: 2 nodes in tree (inc. root) -> delete right child -> only root in tree with bf 0
+	// Case 2
 	{
 		AVLTree<int> t;
 		std::cout << "[Case 2] 2 nodes in tree (inc. root) -> delete right child -> only root in tree with bf 0 \n";
@@ -208,7 +208,7 @@ int testAVLTreeDeletionCases()
 		std::cout << "\n\n";
 	}
 
-	// Case 3: 2 nodes in tree (inc. root) -> delete left child -> only root in tree with bf 0
+	// Case 3
 	{
 		AVLTree<int> t;
 		std::cout << "[Case 3] 2 nodes in tree (inc. root) -> delete left child -> only root in tree with bf 0 \n";
@@ -219,19 +219,61 @@ int testAVLTreeDeletionCases()
 		std::cout << "\n\n";
 	}
 
-	// Edge Case 1: deleting node 35 where parent has bf = -1 and root has bf = 1 -> should rotate twice to balance -> 60 should be new root with bf = 0
+	// Case 4
 	{
 		AVLTree<int> t;
-		std::cout << "[Edge Case 1] deleting node 35 where parent has bf = -1 and root has bf = 1 ->\n right-left double rotation to balance ->\n 60 should be new root with bf = 0\n";
-		std::vector<int> insertionsInOrder = {50, 30, 60, 20, 35, 55, 70, 15, 52, 58, 77, 57};
+		std::cout << "[Case 4] deleting root with right node while root having bf = -1 -> bf becomes -2 -> should rotate to the right to balance -> new root = 7\n";
+		std::vector<int> insertionsInOrder = {9, 7, 12, 5};
 		for (auto i = 0; i < insertionsInOrder.size(); ++i)
 		{
 			t.insertNode(insertionsInOrder.at(i));
 		}
-		t.removeNode(35);
+		t.removeNode(9);
 		t.printTree();
 		std::cout << "\n\n";
 	}
+
+	// Case 5
+	{
+		AVLTree<int> t;
+		std::cout << "[Case 5] deleting root (bf=0) with 2 right node -> new root = 12 with bf = -1 -> no rotation should occur\n";
+		std::vector<int> insertionsInOrder = {9, 7, 12, 5, 13};
+		for (auto i = 0; i < insertionsInOrder.size(); ++i)
+		{
+			t.insertNode(insertionsInOrder.at(i));
+		}
+		t.removeNode(9);
+		t.printTree();
+		std::cout << "\n\n";
+	}
+
+	// Case 6
+	{
+		AVLTree<int> t;
+		std::cout << "[Case 6] deleting root (bf=1) that has successor -> successor 10 should take place of root with (bf=0)\n";
+		std::vector<int> insertionsInOrder = {9, 5, 12, 10};
+		for (auto i = 0; i < insertionsInOrder.size(); ++i)
+		{
+			t.insertNode(insertionsInOrder.at(i));
+		}
+		t.removeNode(9);
+		t.printTree();
+		std::cout << "\n\n";
+	}
+
+	// Edge Case 1
+	// {
+	// 	AVLTree<int> t;
+	// 	std::cout << "[Edge Case 1] deleting node 35 where parent has bf = -1 and root has bf = 1 ->\n right-left double rotation to balance ->\n 60 should be new root with bf = 0\n";
+	// 	std::vector<int> insertionsInOrder = {50, 30, 60, 20, 35, 55, 70, 15, 52, 58, 77, 57};
+	// 	for (auto i = 0; i < insertionsInOrder.size(); ++i)
+	// 	{
+	// 		t.insertNode(insertionsInOrder.at(i));
+	// 	}
+	// 	t.removeNode(35);
+	// 	t.printTree();
+	// 	std::cout << "\n\n";
+	// }
 
 	return 0;
 }
