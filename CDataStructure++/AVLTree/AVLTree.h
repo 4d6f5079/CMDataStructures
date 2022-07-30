@@ -9,6 +9,7 @@ template <typename T>
 class AVLTree
 {
 public:
+	// typedef pair containing the deleted root and whether it was deleted from the right direction
 	using _AVL_fromRight_Pair = std::pair<AVLNode<T> *, bool>;
 
 public:
@@ -47,11 +48,9 @@ public:
 		}
 	}
 
-	// TODO: implement deletion of node
 	// Should be the same way as with deletion in BST.
-	// Some things that should be implemented differently:
-	// 	1: The BF value of the removed node should be taken over to the node that it is replaced with
-	// 		So the BF of successor node should be replaced with the BF of the removed node
+	// Regarding balance factor and flow of updates:
+	// 	1: The BF of successor node should be replaced with the BF of the removed node
 	//	2: After deletion, the parent before deletion of the node that is used to replace the deleted
 	//		node should be used to recursivly update BF values of parent nodes until BF of -1 or 1 is found
 	_AVL_fromRight_Pair removeNode(
@@ -225,7 +224,7 @@ public:
 	}
 
 	/*
-	 *
+	 *	Remove node with given data. Rebalance tree appropriately.
 	 */
 	void removeNode(const T &data)
 	{
@@ -332,62 +331,61 @@ public:
 		AVLNode<T> *rightOfInnerChild = innerChild->getRight(); // t3
 		const auto innerChildBF = innerChild->getBf();
 
-		if (innerChild != nullptr) // TODO: remove this if statement as it is assumed/expected that this node exists
+		// if (innerChild != nullptr) // FOR DEBUGGING: it is assumed/expected that this node exists
+		// {
+		// rotate right around currNode and then left around parentNode
+		currNode->setLeft(rightOfInnerChild);
+		if (rightOfInnerChild != nullptr)
 		{
-			// rotate right around currNode and then left around parentNode
-			currNode->setLeft(rightOfInnerChild);
-			if (rightOfInnerChild != nullptr)
-			{
-				rightOfInnerChild->setParent(currNode);
-			}
-			parentNode->setRight(leftOfInnerChild);
-			if (leftOfInnerChild != nullptr)
-			{
-				leftOfInnerChild->setParent(parentNode);
-			}
-			innerChild->setLeft(parentNode);
-			innerChild->setRight(currNode);
+			rightOfInnerChild->setParent(currNode);
+		}
+		parentNode->setRight(leftOfInnerChild);
+		if (leftOfInnerChild != nullptr)
+		{
+			leftOfInnerChild->setParent(parentNode);
+		}
+		innerChild->setLeft(parentNode);
+		innerChild->setRight(currNode);
 
-			// Set new parent left/right of innerChild to innerChild itself so that ref from other nodes
-			// to innerChild does not get lost
-			auto parentParentNode = parentNode->getParent();
-			setChildFromParent(parentParentNode, parentNode, innerChild);
+		// Set new parent left/right of innerChild to innerChild itself so that ref from other nodes
+		// to innerChild does not get lost
+		auto parentParentNode = parentNode->getParent();
+		setChildFromParent(parentParentNode, parentNode, innerChild);
 
-			innerChild->setParent(parentParentNode);
-			parentNode->setParent(innerChild);
-			currNode->setParent(innerChild);
+		innerChild->setParent(parentParentNode);
+		parentNode->setParent(innerChild);
+		currNode->setParent(innerChild);
 
-			// 1st case, BF(Y) == 0,
-			//   only happens with deletion, not insertion:
-			if (innerChildBF == 0)
+		// 1st case, BF(Y) == 0,
+		//   only happens with deletion, not insertion:
+		if (innerChildBF == 0)
+		{
+			parentNode->setBf(0);
+			currNode->setBf(0);
+		}
+		else
+		{
+			// other cases happen with insertion or deletion:
+			if (innerChildBF > 0)
 			{
-				parentNode->setBf(0);
+				// t3 was higher
+				parentNode->setBf(-1); // t1 now higher
 				currNode->setBf(0);
 			}
 			else
 			{
-				// other cases happen with insertion or deletion:
-				if (innerChildBF > 0)
-				{
-					// t3 was higher
-					parentNode->setBf(-1); // t1 now higher
-					currNode->setBf(0);
-				}
-				else
-				{
-					// t2 was higher
-					parentNode->setBf(0);
-					currNode->setBf(1); // t4 now higher
-				}
+				// t2 was higher
+				parentNode->setBf(0);
+				currNode->setBf(1); // t4 now higher
 			}
-
-			innerChild->setBf(0);
-
-			return innerChild;
 		}
 
-		std::cout << "[rotateRightLeft] innerChild is not valid (nullptr): " << innerChild << "\n";
-		return nullptr;
+		innerChild->setBf(0);
+
+		return innerChild;
+		// }
+		// std::cout << "[rotateRightLeft] innerChild is not valid (nullptr): " << innerChild << "\n";
+		// return nullptr;
 	}
 
 	/*
@@ -401,62 +399,61 @@ public:
 		AVLNode<T> *rightOfInnerChild = innerChild->getRight(); // t2
 		const auto innerChildBF = innerChild->getBf();
 
-		if (innerChild != nullptr) // TODO: remove this if statement as it is assumed/expected that this node exists
+		// if (innerChild != nullptr) // FOR DEBUGGING: it is assumed/expected that this node exists
+		// {
+		// rotate right around currNode and then left around parentNode
+		currNode->setRight(leftOfInnerChild);
+		if (leftOfInnerChild != nullptr)
 		{
-			// rotate right around currNode and then left around parentNode
-			currNode->setRight(leftOfInnerChild);
-			if (leftOfInnerChild != nullptr)
-			{
-				leftOfInnerChild->setParent(currNode);
-			}
-			parentNode->setLeft(rightOfInnerChild);
-			if (rightOfInnerChild != nullptr)
-			{
-				rightOfInnerChild->setParent(parentNode);
-			}
-			innerChild->setRight(parentNode);
-			innerChild->setLeft(currNode);
+			leftOfInnerChild->setParent(currNode);
+		}
+		parentNode->setLeft(rightOfInnerChild);
+		if (rightOfInnerChild != nullptr)
+		{
+			rightOfInnerChild->setParent(parentNode);
+		}
+		innerChild->setRight(parentNode);
+		innerChild->setLeft(currNode);
 
-			// Set new parent left/right of innerChild to innerChild itself so that ref from other nodes
-			// to innerChild does not get lost
-			auto parentParentNode = parentNode->getParent();
-			setChildFromParent(parentParentNode, parentNode, innerChild);
+		// Set new parent left/right of innerChild to innerChild itself so that ref from other nodes
+		// to innerChild does not get lost
+		auto parentParentNode = parentNode->getParent();
+		setChildFromParent(parentParentNode, parentNode, innerChild);
 
-			innerChild->setParent(parentParentNode);
-			parentNode->setParent(innerChild);
-			currNode->setParent(innerChild);
+		innerChild->setParent(parentParentNode);
+		parentNode->setParent(innerChild);
+		currNode->setParent(innerChild);
 
-			// 1st case, BF(Y) == 0,
-			//   only happens with deletion, not insertion:
-			if (innerChildBF == 0)
+		// 1st case, BF(Y) == 0,
+		//   only happens with deletion, not insertion:
+		if (innerChildBF == 0)
+		{
+			parentNode->setBf(0);
+			currNode->setBf(0);
+		}
+		else
+		{
+			// other cases happen with insertion or deletion:
+			if (innerChildBF > 0)
 			{
+				// t2 was higher
 				parentNode->setBf(0);
-				currNode->setBf(0);
+				currNode->setBf(-1); // t4 now higher
 			}
 			else
 			{
-				// other cases happen with insertion or deletion:
-				if (innerChildBF > 0)
-				{
-					// t2 was higher
-					parentNode->setBf(0);
-					currNode->setBf(-1); // t4 now higher
-				}
-				else
-				{
-					// t3 was higher
-					parentNode->setBf(1); // t1 now higher
-					currNode->setBf(0);
-				}
+				// t3 was higher
+				parentNode->setBf(1); // t1 now higher
+				currNode->setBf(0);
 			}
-
-			innerChild->setBf(0);
-
-			return innerChild;
 		}
 
-		std::cout << "[rotateLeftRight] innerChild is not valid (nullptr): " << innerChild << "\n";
-		return nullptr;
+		innerChild->setBf(0);
+
+		return innerChild;
+		// }
+		// std::cout << "[rotateLeftRight] innerChild is not valid (nullptr): " << innerChild << "\n";
+		// return nullptr;
 	}
 
 	AVLNode<T> *insertNode(
@@ -474,12 +471,10 @@ public:
 			{
 				if (currNode->hasLeft())
 				{
-					// return insertNode(data, currNode, currNode->getLeft(), height + 1);
 					return insertNode(data, currNode->getLeft());
 				}
 				else
 				{
-					// currNode->setLeft(new AVLNode<T>(data, currNode, height + 1));
 					currNode->setLeft(new AVLNode<T>(data, currNode));
 					return currNode->getLeft();
 				}
@@ -488,12 +483,10 @@ public:
 			{
 				if (currNode->hasRight())
 				{
-					// return insertNode(data, currNode, currNode->getRight(), height + 1);
 					return insertNode(data, currNode->getRight());
 				}
 				else
 				{
-					// currNode->setRight(new AVLNode<T>(data, currNode, height + 1));
 					currNode->setRight(new AVLNode<T>(data, currNode));
 					return currNode->getRight();
 				}
@@ -506,7 +499,6 @@ public:
 
 	void insertNode(const T &data)
 	{
-		// const auto insertedNodeRef = insertNode(data, nullptr, root, 0);
 		const auto insertedNodeRef = insertNode(data, root);
 
 		if (insertedNodeRef)
@@ -518,9 +510,9 @@ public:
 		return this->root;
 	}
 
-	AVLNode<T> *DFS(const T &data)
+	AVLNode<T> *searchNode(const T &data)
 	{
-		return DFS(data, root);
+		return searchNode(data, root);
 	}
 
 	inline AVLNode<T> *findInorderSuccessor(AVLNode<T> *rightNodeOfCurrNode)
@@ -559,25 +551,25 @@ private:
 		}
 	}
 
-	AVLNode<T> *DFS(const T &data, AVLNode<T> *currRoot)
+	AVLNode<T> *searchNode(const T &data, AVLNode<T> *currRoot)
 	{
 		if (currRoot != nullptr)
 		{
-			if (currRoot->getData() == data)
+			const auto currRootData = currRoot->getData();
+
+			if (currRootData == data)
 				return currRoot;
 
-			if (currRoot->hasLeft())
+			// search to the right if data > current data node
+			if (data > currRootData)
 			{
-				auto foundLeft = DFS(data, currRoot->getLeft());
-				if (foundLeft)
-					return foundLeft;
+				return searchNode(currRoot->getRight());
 			}
 
-			if (currRoot->getRight())
+			// search to the left if data < current data node
+			if (data < currRootData)
 			{
-				auto foundRight = DFS(data, currRoot->getRight());
-				if (foundRight)
-					return foundRight;
+				return searchNode(currRoot->getLeft());
 			}
 		}
 
