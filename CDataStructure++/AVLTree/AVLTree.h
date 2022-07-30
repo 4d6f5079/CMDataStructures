@@ -715,26 +715,18 @@ private:
 
 			if (currNodeLeftBf <= 0) // Left Left	- Z is a left	child of its parent X and BF(Z) <= 0
 			{
+				nextParentAfterRotation = rotateRight(currNode, currNodeLeft);
 				if (currNode == root)
 				{
-					root = rotateRight(currNode, currNodeLeft);
-					nextParentAfterRotation = root;
-				}
-				else
-				{
-					nextParentAfterRotation = rotateRight(currNode, currNodeLeft);
+					root = nextParentAfterRotation;
 				}
 			}
 			else if (currNodeLeftBf > 0) // Left Right	- Z is a left	child of its parent X and BF(Z) > 0
 			{
+				nextParentAfterRotation = rotateLeftRight(currNode, currNodeLeft);
 				if (currNode == root)
 				{
-					root = rotateLeftRight(currNode, currNodeLeft);
-					nextParentAfterRotation = root;
-				}
-				else
-				{
-					nextParentAfterRotation = rotateLeftRight(currNode, currNodeLeft);
+					root = nextParentAfterRotation;
 				}
 			}
 			else
@@ -750,26 +742,18 @@ private:
 
 			if (currNodeRightBf >= 0) // Right Right	- Z is a right	child of its parent X and BF(Z) >= 0
 			{
+				nextParentAfterRotation = rotateLeft(currNode, currNodeRight);
 				if (currNode == root)
 				{
-					root = rotateLeft(currNode, currNodeRight);
-					nextParentAfterRotation = root;
-				}
-				else
-				{
-					nextParentAfterRotation = rotateLeft(currNode, currNodeRight);
+					root = nextParentAfterRotation;
 				}
 			}
 			else if (currNodeRightBf < 0) // Right Left	- Z is a right	child of its parent X and BF(Z) < 0
 			{
+				nextParentAfterRotation = rotateRightLeft(currNode, currNodeRight);
 				if (currNode == root)
 				{
-					root = rotateRightLeft(currNode, currNodeRight);
-					nextParentAfterRotation = root;
-				}
-				else
-				{
-					nextParentAfterRotation = rotateRightLeft(currNode, currNodeRight);
+					root = nextParentAfterRotation;
 				}
 			}
 			else
