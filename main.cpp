@@ -337,7 +337,6 @@ int testAVLTreeDeletionCases()
 		{
 			t.insertNode(insertionsInOrder.at(i));
 		}
-		t.printTree();
 		t.removeNode(70);
 		t.printTree();
 		std::cout << "\n\n";
