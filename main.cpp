@@ -160,21 +160,21 @@ int testAVLTreeSearchCases()
 		getThree->hasLeft() &&
 		!getThree->hasRight())
 	{
-		std::cout << "[CORRECT] getThree is found and adheres to the expected values\n";
+		std::cout << "[SEARCH CASE 1] CORRECT getThree is found and adheres to the expected values\n";
 	}
 	else
 	{
-		std::cout << "[INCORRECT] getThree does not adhere to the expected values\n";
+		std::cout << "[SEARCH CASE 1] INCORRECT getThree does not adhere to the expected values\n";
 	}
 
 	const auto ShouldNoExists = t.searchNode(100);
 	if (ShouldNoExists == nullptr)
 	{
-		std::cout << "[CORRECT] ShouldNoExists node with value 100 is not in the tree.\n";
+		std::cout << "[SEARCH CASE 2] CORRECT ShouldNoExists node with value 100 is not in the tree.\n";
 	}
 	else
 	{
-		std::cout << "[INCORRECT] ShouldNoExists node with value 100 is found which should not be the case.\n";
+		std::cout << "[SEARCH CASE 2] INCORRECT ShouldNoExists node with value 100 is found which should not be the case.\n";
 	}
 
 	const auto getNineNine = t.searchNode(99);
@@ -183,11 +183,11 @@ int testAVLTreeSearchCases()
 		!getNineNine->hasLeft() &&
 		!getNineNine->hasRight())
 	{
-		std::cout << "[CORRECT] getNineNine is found and adheres to the expected values\n";
+		std::cout << "[SEARCH CASE 3] CORRECT getNineNine is found and adheres to the expected values\n";
 	}
 	else
 	{
-		std::cout << "[INCORRECT] getNineNine does not adhere to the expected values\n";
+		std::cout << "[SEARCH CASE 3] INCORRECT getNineNine does not adhere to the expected values\n";
 	}
 
 	return 0;
@@ -203,11 +203,11 @@ int testAVLTreeInsertionCases()
 
 	if (t.getRoot()->getData() == 60)
 	{
-		std::cout << "[INSERTION CASE 1] rotate left correct";
+		std::cout << "[INSERTION CASE 1] CORRECT rotate left";
 	}
 	else
 	{
-		std::cout << "[INSERTION CASE 1] rotate left incorrect";
+		std::cout << "[INSERTION CASE 1] INCORRECT rotate left";
 	}
 	std::cout << "\n";
 
@@ -223,11 +223,11 @@ int testAVLTreeInsertionCases()
 		_40->getLeft() == _30 &&
 		_40->getRight() == _50)
 	{
-		std::cout << "[INSERTION CASE 2] rotate right correct";
+		std::cout << "[INSERTION CASE 2] CORRECT rotate right";
 	}
 	else
 	{
-		std::cout << "[INSERTION CASE 2] rotate right incorrect";
+		std::cout << "[INSERTION CASE 2] INCORRECT rotate right";
 	}
 	std::cout << "\n";
 
@@ -245,11 +245,11 @@ int testAVLTreeInsertionCases()
 		_75->getRight() == _80 &&
 		_75->getParent() == _60)
 	{
-		std::cout << "[INSERTION CASE 3] rotate right-left correct";
+		std::cout << "[INSERTION CASE 3] CORRECT rotate right-left";
 	}
 	else
 	{
-		std::cout << "[INSERTION CASE 3] rotate right-left incorrect";
+		std::cout << "[INSERTION CASE 3] INCORRECT rotate right-left";
 	}
 	std::cout << "\n";
 
@@ -266,11 +266,11 @@ int testAVLTreeInsertionCases()
 		_25->getRight() == _30_1 &&
 		_25->getParent() == _40)
 	{
-		std::cout << "[INSERTION CASE 4] rotate left-right correct";
+		std::cout << "[INSERTION CASE 4] CORRECT rotate left-right";
 	}
 	else
 	{
-		std::cout << "[INSERTION CASE 4] rotate left-right incorrect";
+		std::cout << "[INSERTION CASE 4] INCORRECT rotate left-right";
 	}
 	std::cout << "\n";
 
@@ -293,11 +293,11 @@ int testAVLTreeInsertionCases()
 		_40_2->getLeft() == _30_2 &&
 		_40_2->getRight() == _50_2)
 	{
-		std::cout << "[INSERTION CASE 5] rotate right with children correct";
+		std::cout << "[INSERTION CASE 5] CORRECT rotate right with children";
 	}
 	else
 	{
-		std::cout << "[INSERTION CASE 5] rotate right with children incorrect";
+		std::cout << "[INSERTION CASE 5] INCORRECT rotate right with children";
 	}
 	std::cout << "\n";
 
@@ -736,7 +736,7 @@ int main(int argc, char *argv[])
 {
 	// return testingHashTableWithBenchmark();
 	// return testingBinarySearchTree();
-	// return testAVLTreeDeletionCases();
-	return testAVLTreeInsertionCases();
-	// return testAVLTreeSearchCases();
+	testAVLTreeDeletionCases();
+	testAVLTreeInsertionCases();
+	return testAVLTreeSearchCases();
 }
