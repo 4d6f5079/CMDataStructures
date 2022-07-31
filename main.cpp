@@ -195,45 +195,117 @@ int testAVLTreeSearchCases()
 
 int testAVLTreeInsertionCases()
 {
-	AVLTree<int> t(9);
-	// t.insertNode(50);
-	// t.insertNode(60);
-	// t.insertNode(70);
-	// t.insertNode(40);
-	// t.insertNode(30);
-	// t.insertNode(80);
-	// t.insertNode(75);
-	// t.insertNode(20);
-	// t.insertNode(25);
-	// t.insertNode(15);
+	AVLTree<int> t;
 
-	// t.insertNode(10);
-	// t.insertNode(11);
-	// t.insertNode(12);
-	// t.insertNode(8);
-	// t.insertNode(7);
-	// t.insertNode(6);
-	// t.insertNode(5);
-	// t.insertNode(4);
-	// t.insertNode(3);
-	// t.insertNode(2);
-	// t.insertNode(1);
-	// t.insertNode(1);
-	// t.insertNode(19);
-	// t.insertNode(20);
-	// t.insertNode(21);
-	// t.insertNode(22);
-	// t.insertNode(23);
-	// t.insertNode(24);
-	// t.insertNode(25);
-	// t.insertNode(26);
+	t.insertNode(50);
+	t.insertNode(60);
+	t.insertNode(70);
+
+	if (t.getRoot()->getData() == 60)
+	{
+		std::cout << "[INSERTION CASE 1] rotate left correct";
+	}
+	else
+	{
+		std::cout << "[INSERTION CASE 1] rotate left incorrect";
+	}
+	std::cout << "\n";
+
+	t.insertNode(40);
+	t.insertNode(30);
+
+	const auto _40 = t.searchNode(40);
+	const auto _30 = t.searchNode(30);
+	const auto _50 = t.searchNode(50);
+	if (_40->getBf() == 0 &&
+		_30->getBf() == 0 &&
+		_50->getBf() == 0 &&
+		_40->getLeft() == _30 &&
+		_40->getRight() == _50)
+	{
+		std::cout << "[INSERTION CASE 2] rotate right correct";
+	}
+	else
+	{
+		std::cout << "[INSERTION CASE 2] rotate right incorrect";
+	}
+	std::cout << "\n";
+
+	t.insertNode(80);
+	t.insertNode(75);
+
+	const auto _70 = t.searchNode(70);
+	const auto _60 = t.searchNode(60);
+	const auto _80 = t.searchNode(80);
+	const auto _75 = t.searchNode(75);
+	if (_70->getBf() == 0 &&
+		_80->getBf() == 0 &&
+		_75->getBf() == 0 &&
+		_75->getLeft() == _70 &&
+		_75->getRight() == _80 &&
+		_75->getParent() == _60)
+	{
+		std::cout << "[INSERTION CASE 3] rotate right-left correct";
+	}
+	else
+	{
+		std::cout << "[INSERTION CASE 3] rotate right-left incorrect";
+	}
+	std::cout << "\n";
+
+	t.insertNode(20);
+	t.insertNode(25);
+
+	const auto _20 = t.searchNode(20);
+	const auto _25 = t.searchNode(25);
+	const auto _30_1 = t.searchNode(30);
+	if (_20->getBf() == 0 &&
+		_30_1->getBf() == 0 &&
+		_25->getBf() == 0 &&
+		_25->getLeft() == _20 &&
+		_25->getRight() == _30_1 &&
+		_25->getParent() == _40)
+	{
+		std::cout << "[INSERTION CASE 4] rotate left-right correct";
+	}
+	else
+	{
+		std::cout << "[INSERTION CASE 4] rotate left-right incorrect";
+	}
+	std::cout << "\n";
+
+	t.insertNode(15);
+
+	const auto _20_2 = t.searchNode(20);
+	const auto _25_2 = t.searchNode(25);
+	const auto _30_2 = t.searchNode(30);
+	const auto _60_2 = t.searchNode(60);
+	const auto _40_2 = t.searchNode(40);
+	const auto _50_2 = t.searchNode(50);
+	const auto _15 = t.searchNode(15);
+	if (_60_2->getBf() == -1 &&
+		_25_2->getBf() == 0 &&
+		_20_2->getBf() == -1 &&
+		_20_2->getLeft() == _15 &&
+		_25_2->getLeft() == _20_2 &&
+		_25_2->getRight() == _40_2 &&
+		_25_2->getParent() == _60_2 &&
+		_40_2->getLeft() == _30_2 &&
+		_40_2->getRight() == _50_2)
+	{
+		std::cout << "[INSERTION CASE 5] rotate right with children correct";
+	}
+	else
+	{
+		std::cout << "[INSERTION CASE 5] rotate right with children incorrect";
+	}
+	std::cout << "\n";
 
 	return 0;
 }
 
 int testAVLTreeDeletionCases()
 {
-
 	/**
 	 * @brief [Case 1] Root deletion:
 	 * 	tree becomes empty
@@ -245,11 +317,11 @@ int testAVLTreeDeletionCases()
 		// t.printTree();
 		if (t.getRoot() == nullptr)
 		{
-			std::cout << "[CASE 1] CORRECT";
+			std::cout << "[DELETION CASE 1] CORRECT";
 		}
 		else
 		{
-			std::cout << "[CASE 1] INCORRECT";
+			std::cout << "[DELETION CASE 1] INCORRECT";
 		}
 		std::cout << "\n";
 	}
@@ -269,11 +341,11 @@ int testAVLTreeDeletionCases()
 		const auto root = t.getRoot();
 		if (root->getBf() == 0 && root->getData() == 55)
 		{
-			std::cout << "[CASE 2] CORRECT";
+			std::cout << "[DELETION CASE 2] CORRECT";
 		}
 		else
 		{
-			std::cout << "[CASE 2] INCORRECT";
+			std::cout << "[DELETION CASE 2] INCORRECT";
 		}
 		std::cout << "\n";
 	}
@@ -293,11 +365,11 @@ int testAVLTreeDeletionCases()
 		const auto root = t.getRoot();
 		if (root->getBf() == 0 && root->getData() == 40)
 		{
-			std::cout << "[CASE 3] CORRECT";
+			std::cout << "[DELETION CASE 3] CORRECT";
 		}
 		else
 		{
-			std::cout << "[CASE 3] INCORRECT";
+			std::cout << "[DELETION CASE 3] INCORRECT";
 		}
 		std::cout << "\n";
 	}
@@ -328,11 +400,11 @@ int testAVLTreeDeletionCases()
 			rightRoot->getBf() == 0 &&
 			rightRoot->getData() == 12)
 		{
-			std::cout << "[CASE 4] CORRECT";
+			std::cout << "[DELETION CASE 4] CORRECT";
 		}
 		else
 		{
-			std::cout << "[CASE 4] INCORRECT";
+			std::cout << "[DELETION CASE 4] INCORRECT";
 		}
 		std::cout << "\n";
 	}
@@ -363,11 +435,11 @@ int testAVLTreeDeletionCases()
 			rightRoot->getBf() == 0 &&
 			rightRoot->getData() == 13)
 		{
-			std::cout << "[CASE 5] CORRECT";
+			std::cout << "[DELETION CASE 5] CORRECT";
 		}
 		else
 		{
-			std::cout << "[CASE 5] INCORRECT";
+			std::cout << "[DELETION CASE 5] INCORRECT";
 		}
 		std::cout << "\n";
 	}
@@ -397,11 +469,11 @@ int testAVLTreeDeletionCases()
 			rightRoot->getBf() == 0 &&
 			rightRoot->getData() == 12)
 		{
-			std::cout << "[CASE 6] CORRECT";
+			std::cout << "[DELETION CASE 6] CORRECT";
 		}
 		else
 		{
-			std::cout << "[CASE 6] INCORRECT";
+			std::cout << "[DELETION CASE 6] INCORRECT";
 		}
 		std::cout << "\n";
 	}
@@ -433,11 +505,11 @@ int testAVLTreeDeletionCases()
 			rightRoot->getBf() == 0 &&
 			rightRoot->getData() == 10)
 		{
-			std::cout << "[CASE 7] CORRECT";
+			std::cout << "[DELETION CASE 7] CORRECT";
 		}
 		else
 		{
-			std::cout << "[CASE 7] INCORRECT";
+			std::cout << "[DELETION CASE 7] INCORRECT";
 		}
 		std::cout << "\n";
 	}
@@ -467,11 +539,11 @@ int testAVLTreeDeletionCases()
 			rightRoot->getBf() == 0 &&
 			rightRoot->getData() == 10)
 		{
-			std::cout << "[CASE 8] CORRECT";
+			std::cout << "[DELETION CASE 8] CORRECT";
 		}
 		else
 		{
-			std::cout << "[CASE 8] INCORRECT";
+			std::cout << "[DELETION CASE 8] INCORRECT";
 		}
 		std::cout << "\n";
 	}
@@ -502,11 +574,11 @@ int testAVLTreeDeletionCases()
 			rightRoot->getBf() == 0 &&
 			rightRoot->getData() == 40)
 		{
-			std::cout << "[CASE 9] CORRECT";
+			std::cout << "[DELETION CASE 9] CORRECT";
 		}
 		else
 		{
-			std::cout << "[CASE 9] INCORRECT";
+			std::cout << "[DELETION CASE 9] INCORRECT";
 		}
 		std::cout << "\n";
 	}
@@ -537,19 +609,94 @@ int testAVLTreeDeletionCases()
 			rightRoot->getBf() == 0 &&
 			rightRoot->getData() == 66)
 		{
-			std::cout << "[CASE 10] CORRECT";
+			std::cout << "[DELETION CASE 10] CORRECT";
 		}
 		else
 		{
-			std::cout << "[CASE 10] INCORRECT";
+			std::cout << "[DELETION CASE 10] INCORRECT";
 		}
 		std::cout << "\n";
 	}
 
-	/*
-	 *[Edge Case] deleting node 35 where parent has bf = -1 and root has bf = 1 ->
-	 * right-left double rotation to balance ->
-	 * 55 should be new root with bf = 0
+	/**
+	 * @brief [Case 11]:
+	 * 1: removing root 9
+	 * 2: node 10 becomes new root (successor)
+	 * 3: node 10 position is replaced with right node 13
+	 * 4: no rotations should occur
+	 */
+	{
+		AVLTree<int> t;
+		std::vector<int> insertionsInOrder = {9, 7, 20, 5, 8, 15, 40, 6, 10, 30, 13};
+		for (auto i = 0; i < insertionsInOrder.size(); ++i)
+		{
+			t.insertNode(insertionsInOrder.at(i));
+		}
+		t.removeNode(9);
+		// t.printTree();
+		const auto root = t.getRoot();
+		const auto leftRoot = root->getLeft();
+		const auto rightRoot = root->getRight();
+		const auto newInorderSuccessor = t.findInorderSuccessor(rightRoot);
+		if (root->getBf() == 0 &&
+			root->getData() == 10 &&
+			leftRoot->getBf() == -1 &&
+			leftRoot->getData() == 7 &&
+			rightRoot->getBf() == 0 &&
+			rightRoot->getData() == 20 &&
+			newInorderSuccessor->getData() == 13)
+		{
+			std::cout << "[DELETION CASE 11] CORRECT";
+		}
+		else
+		{
+			std::cout << "[DELETION CASE 11] INCORRECT";
+		}
+		std::cout << "\n";
+	}
+
+	/**
+	 * @brief [Case 12]:
+	 * 1: removing root 9
+	 * 2: node 11 becomes new root (successor)
+	 * 3: node 11 position is replaced with right node 12
+	 * 4: no rotations should occur
+	 */
+	{
+		AVLTree<int> t;
+		std::vector<int> insertionsInOrder = {9, 7, 15, 8, 11, 30, 12};
+		for (auto i = 0; i < insertionsInOrder.size(); ++i)
+		{
+			t.insertNode(insertionsInOrder.at(i));
+		}
+		t.removeNode(9);
+		// t.printTree();
+		const auto root = t.getRoot();
+		const auto leftRoot = root->getLeft();
+		const auto rightRoot = root->getRight();
+		const auto newInorderSuccessor = t.findInorderSuccessor(rightRoot);
+		if (root->getBf() == 0 &&
+			root->getData() == 11 &&
+			leftRoot->getBf() == 1 &&
+			leftRoot->getData() == 7 &&
+			rightRoot->getBf() == 0 &&
+			rightRoot->getData() == 15 &&
+			newInorderSuccessor->getData() == 12)
+		{
+			std::cout << "[DELETION CASE 12] CORRECT";
+		}
+		else
+		{
+			std::cout << "[DELETION CASE 12] INCORRECT";
+		}
+		std::cout << "\n";
+	}
+
+	/**
+	 * @brief [Edge Case]:
+	 * 1: deleting node 35 where parent has bf = -1 and root has bf = 1
+	 * 2: right-left double rotation to balance
+	 * 3: 55 should be new root with bf = 0
 	 */
 	{
 		AVLTree<int> t;
@@ -573,11 +720,11 @@ int testAVLTreeDeletionCases()
 			_70->getBf() == 1 &&
 			_70->getParent() == newRoot->getRight())
 		{
-			std::cout << "[Edge Case] CORRECT";
+			std::cout << "[DELETION EDGE CASE] CORRECT";
 		}
 		else
 		{
-			std::cout << "[Edge Case] INCORRECT";
+			std::cout << "[DELETION EDGE CASE] INCORRECT";
 		}
 		std::cout << "\n";
 	}
@@ -589,6 +736,7 @@ int main(int argc, char *argv[])
 {
 	// return testingHashTableWithBenchmark();
 	// return testingBinarySearchTree();
-	return testAVLTreeDeletionCases();
+	// return testAVLTreeDeletionCases();
+	return testAVLTreeInsertionCases();
 	// return testAVLTreeSearchCases();
 }
