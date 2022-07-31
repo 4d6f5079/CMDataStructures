@@ -145,6 +145,54 @@ int testingBinarySearchTree()
 	}
 }
 
+int testAVLTreeSearchCases()
+{
+	AVLTree<int> t(7);
+	t.insertNode(3);
+	t.insertNode(10);
+	t.insertNode(99);
+	t.insertNode(-1);
+
+	const auto getThree = t.searchNode(3);
+	if (getThree->getData() == 3 &&
+		getThree->getBf() == -1 &&
+		getThree->getParent() == t.getRoot() &&
+		getThree->hasLeft() &&
+		!getThree->hasRight())
+	{
+		std::cout << "[CORRECT] getThree is found and adheres to the expected values\n";
+	}
+	else
+	{
+		std::cout << "[INCORRECT] getThree does not adhere to the expected values\n";
+	}
+
+	const auto ShouldNoExists = t.searchNode(100);
+	if (ShouldNoExists == nullptr)
+	{
+		std::cout << "[CORRECT] ShouldNoExists node with value 100 is not in the tree.\n";
+	}
+	else
+	{
+		std::cout << "[INCORRECT] ShouldNoExists node with value 100 is found which should not be the case.\n";
+	}
+
+	const auto getNineNine = t.searchNode(99);
+	if (getNineNine->getData() == 99 &&
+		getNineNine->getBf() == 0 &&
+		!getNineNine->hasLeft() &&
+		!getNineNine->hasRight())
+	{
+		std::cout << "[CORRECT] getNineNine is found and adheres to the expected values\n";
+	}
+	else
+	{
+		std::cout << "[INCORRECT] getNineNine does not adhere to the expected values\n";
+	}
+
+	return 0;
+}
+
 int testAVLTreeInsertionCases()
 {
 	AVLTree<int> t(9);
@@ -186,176 +234,352 @@ int testAVLTreeInsertionCases()
 int testAVLTreeDeletionCases()
 {
 
-	// Case 1
+	/**
+	 * @brief [Case 1] Root deletion:
+	 * 	tree becomes empty
+	 */
 	{
 		AVLTree<int> t;
-		std::cout << "[Case 1] Root deletion -> "
-				  << "tree becomes empty \n";
 		t.insertNode(50);
 		t.removeNode(50);
-		t.printTree();
-		std::cout << "\n\n";
+		// t.printTree();
+		if (t.getRoot() == nullptr)
+		{
+			std::cout << "[CASE 1] CORRECT";
+		}
+		else
+		{
+			std::cout << "[CASE 1] INCORRECT";
+		}
+		std::cout << "\n";
 	}
 
-	// Case 2
+	/**
+	 * @brief [Case 2] :
+	 * 1: 2 nodes in tree (inc. root)
+	 * 2: delete root
+	 * 3: only root 55 in tree with bf 0
+	 */
 	{
 		AVLTree<int> t;
-		std::cout << "[Case 2] 2 nodes in tree (inc. root) -> "
-				  << "delete right child ->"
-				  << " only root in tree with bf 0 \n";
 		t.insertNode(50);
 		t.insertNode(55);
-		t.removeNode(55);
-		t.printTree();
-		t.removeNode(50); // clean up
-		std::cout << "\n\n";
+		t.removeNode(50);
+		// t.printTree();
+		const auto root = t.getRoot();
+		if (root->getBf() == 0 && root->getData() == 55)
+		{
+			std::cout << "[CASE 2] CORRECT";
+		}
+		else
+		{
+			std::cout << "[CASE 2] INCORRECT";
+		}
+		std::cout << "\n";
 	}
 
-	// Case 3
+	/**
+	 * @brief [Case 3]:
+	 * 1: 2 nodes in tree (inc. root)
+	 * 2: delete root
+	 * 3: only root 40 in tree with bf 0
+	 */
 	{
 		AVLTree<int> t;
-		std::cout << "[Case 3] 2 nodes in tree (inc. root) ->"
-				  << " delete left child ->"
-				  << " only root in tree with bf 0 \n";
 		t.insertNode(50);
 		t.insertNode(40);
-		t.removeNode(40);
-		t.printTree();
-		std::cout << "\n\n";
+		t.removeNode(50);
+		// t.printTree();
+		const auto root = t.getRoot();
+		if (root->getBf() == 0 && root->getData() == 40)
+		{
+			std::cout << "[CASE 3] CORRECT";
+		}
+		else
+		{
+			std::cout << "[CASE 3] INCORRECT";
+		}
+		std::cout << "\n";
 	}
 
-	// Case 4
+	/**
+	 * @brief [Case 4]:
+	 * 1: deleting root with right node while root having bf = -1
+	 * 2: bf becomes -2
+	 * 3: should rotate to the right to balance
+	 * 4: new root = 7
+	 */
 	{
 		AVLTree<int> t;
-		std::cout << "[Case 4] deleting root with right node while root having bf = -1 -> "
-				  << "bf becomes -2 ->"
-				  << " should rotate to the right to balance ->"
-				  << " new root = 7\n";
 		std::vector<int> insertionsInOrder = {9, 7, 12, 5};
 		for (auto i = 0; i < insertionsInOrder.size(); ++i)
 		{
 			t.insertNode(insertionsInOrder.at(i));
 		}
 		t.removeNode(9);
-		t.printTree();
-		std::cout << "\n\n";
+		// t.printTree();
+		const auto root = t.getRoot();
+		const auto leftRoot = root->getLeft();
+		const auto rightRoot = root->getRight();
+		if (root->getBf() == 0 &&
+			root->getData() == 7 &&
+			leftRoot->getBf() == 0 &&
+			leftRoot->getData() == 5 &&
+			rightRoot->getBf() == 0 &&
+			rightRoot->getData() == 12)
+		{
+			std::cout << "[CASE 4] CORRECT";
+		}
+		else
+		{
+			std::cout << "[CASE 4] INCORRECT";
+		}
+		std::cout << "\n";
 	}
 
-	// Case 5
+	/**
+	 * @brief [Case 5]:
+	 * 1: deleting root (bf=0) with 2 right node
+	 * 2: new root = 12 with bf = -1
+	 * 3: no rotation should occur
+	 * 4: new root = 12
+	 */
 	{
 		AVLTree<int> t;
-		std::cout << "[Case 5] deleting root (bf=0) with 2 right node ->"
-				  << " new root = 12 with bf = -1 ->"
-				  << " no rotation should occur"
-				  << "new root = 12\n";
 		std::vector<int> insertionsInOrder = {9, 7, 12, 5, 13};
 		for (auto i = 0; i < insertionsInOrder.size(); ++i)
 		{
 			t.insertNode(insertionsInOrder.at(i));
 		}
 		t.removeNode(9);
-		t.printTree();
-		std::cout << "\n\n";
+		// t.printTree();
+		const auto root = t.getRoot();
+		const auto leftRoot = root->getLeft();
+		const auto rightRoot = root->getRight();
+		if (root->getBf() == -1 &&
+			root->getData() == 12 &&
+			leftRoot->getBf() == -1 &&
+			leftRoot->getData() == 7 &&
+			rightRoot->getBf() == 0 &&
+			rightRoot->getData() == 13)
+		{
+			std::cout << "[CASE 5] CORRECT";
+		}
+		else
+		{
+			std::cout << "[CASE 5] INCORRECT";
+		}
+		std::cout << "\n";
 	}
 
-	// Case 6
+	/**
+	 * @brief [Case 6]:
+	 * 1: deleting root (bf=1) that has successor
+	 * 2: successor 10 should take place of root with (bf=0)
+	 * 3: new root = 10
+	 */
 	{
 		AVLTree<int> t;
-		std::cout << "[Case 6] deleting root (bf=1) that has successor -> "
-				  << "successor 10 should take place of root with (bf=0) ->"
-				  << "new root = 10\n";
 		std::vector<int> insertionsInOrder = {9, 5, 12, 10};
 		for (auto i = 0; i < insertionsInOrder.size(); ++i)
 		{
 			t.insertNode(insertionsInOrder.at(i));
 		}
 		t.removeNode(9);
-		t.printTree();
-		std::cout << "\n\n";
+		// t.printTree();
+		const auto root = t.getRoot();
+		const auto leftRoot = root->getLeft();
+		const auto rightRoot = root->getRight();
+		if (root->getBf() == 0 &&
+			root->getData() == 10 &&
+			leftRoot->getBf() == 0 &&
+			leftRoot->getData() == 5 &&
+			rightRoot->getBf() == 0 &&
+			rightRoot->getData() == 12)
+		{
+			std::cout << "[CASE 6] CORRECT";
+		}
+		else
+		{
+			std::cout << "[CASE 6] INCORRECT";
+		}
+		std::cout << "\n";
 	}
 
-	// Case 7
+	/**
+	 * @brief [Case 7]:
+	 * 1: deleting root node (bf=-1)
+	 * 2: successor replaces the old root node
+	 * 3: the new bf value becomes -2 (unbalanced)
+	 * 4: balance by rotating right
+	 * 5: new root = 5
+	 */
 	{
 		AVLTree<int> t;
-		std::cout << "[Case 7] deleting root node (bf=-1) ->"
-				  << "successor replaces the old root node ->"
-				  << "the new bf value becomes -2 (unbalanced) ->"
-				  << "balance by rotating right ->"
-				  << "new root = 5\n";
 		std::vector<int> insertionsInOrder = {9, 5, 12, -5, 7, 10, -10};
 		for (auto i = 0; i < insertionsInOrder.size(); ++i)
 		{
 			t.insertNode(insertionsInOrder.at(i));
 		}
 		t.removeNode(9);
-		t.printTree();
-		std::cout << "\n\n";
+		// t.printTree();
+		const auto root = t.getRoot();
+		const auto leftRoot = root->getLeft();
+		const auto rightRoot = root->getRight();
+		if (root->getBf() == 0 &&
+			root->getData() == 5 &&
+			leftRoot->getBf() == -1 &&
+			leftRoot->getData() == -5 &&
+			rightRoot->getBf() == 0 &&
+			rightRoot->getData() == 10)
+		{
+			std::cout << "[CASE 7] CORRECT";
+		}
+		else
+		{
+			std::cout << "[CASE 7] INCORRECT";
+		}
+		std::cout << "\n";
 	}
 
-	// Case 8
+	/**
+	 * @brief [Case 8]:
+	 * 1: removing root with successor
+	 * 2: causes left-right rotation
+	 * 3: new root = 7 (bf=0)
+	 */
 	{
 		AVLTree<int> t;
-		std::cout << "[Case 8]  removing root with successor ->"
-				  << " causes left-right rotation ->"
-				  << " new root = 7 (bf=0)\n";
 		std::vector<int> insertionsInOrder = {9, 6, 12, 4, 7, 10, 8};
 		for (auto i = 0; i < insertionsInOrder.size(); ++i)
 		{
 			t.insertNode(insertionsInOrder.at(i));
 		}
 		t.removeNode(9);
-		t.printTree();
-		std::cout << "\n\n";
+		// t.printTree();
+		const auto root = t.getRoot();
+		const auto leftRoot = root->getLeft();
+		const auto rightRoot = root->getRight();
+		if (root->getBf() == 0 &&
+			root->getData() == 7 &&
+			leftRoot->getBf() == -1 &&
+			leftRoot->getData() == 6 &&
+			rightRoot->getBf() == 0 &&
+			rightRoot->getData() == 10)
+		{
+			std::cout << "[CASE 8] CORRECT";
+		}
+		else
+		{
+			std::cout << "[CASE 8] INCORRECT";
+		}
+		std::cout << "\n";
 	}
 
-	// Case 9
+	/**
+	 * @brief [Case 9]:
+	 * 1: removing root with successor
+	 * 2: bf of parent of successor becomes 2
+	 * 3: left rotation of successor parent
+	 * 4: new root = 15
+	 */
 	{
 		AVLTree<int> t;
-		std::cout << "[Case 9]  removing root with successor -> "
-				  << "bf of parent of successor becomes 2 ->"
-				  << " left rotation of successor parent -> "
-				  << "new root = 15\n";
 		std::vector<int> insertionsInOrder = {9, 5, 30, 1, 15, 40, 50};
 		for (auto i = 0; i < insertionsInOrder.size(); ++i)
 		{
 			t.insertNode(insertionsInOrder.at(i));
 		}
 		t.removeNode(9);
-		t.printTree();
-		std::cout << "\n\n";
+		// t.printTree();
+		const auto root = t.getRoot();
+		const auto leftRoot = root->getLeft();
+		const auto rightRoot = root->getRight();
+		if (root->getBf() == 0 &&
+			root->getData() == 15 &&
+			leftRoot->getBf() == -1 &&
+			leftRoot->getData() == 5 &&
+			rightRoot->getBf() == 0 &&
+			rightRoot->getData() == 40)
+		{
+			std::cout << "[CASE 9] CORRECT";
+		}
+		else
+		{
+			std::cout << "[CASE 9] INCORRECT";
+		}
+		std::cout << "\n";
 	}
 
-	// Case 10
+	/**
+	 * @brief [Case 10]:
+	 * 1: removing right node of root
+	 * 2: bf of root becomes -2
+	 * 3: right rotation of root
+	 * 4: new root = 50
+	 */
 	{
 		AVLTree<int> t;
-		std::cout << "[Case 10]  removing right node of root -> "
-				  << "bf of root becomes -2 ->"
-				  << " right rotation of root -> "
-				  << "new root = 50\n";
 		std::vector<int> insertionsInOrder = {66, 50, 70, 45, 51, 96, 40};
 		for (auto i = 0; i < insertionsInOrder.size(); ++i)
 		{
 			t.insertNode(insertionsInOrder.at(i));
 		}
 		t.removeNode(70);
-		t.printTree();
-		std::cout << "\n\n";
+		// t.printTree();
+		const auto root = t.getRoot();
+		const auto leftRoot = root->getLeft();
+		const auto rightRoot = root->getRight();
+		if (root->getBf() == 0 &&
+			root->getData() == 50 &&
+			leftRoot->getBf() == -1 &&
+			leftRoot->getData() == 45 &&
+			rightRoot->getBf() == 0 &&
+			rightRoot->getData() == 66)
+		{
+			std::cout << "[CASE 10] CORRECT";
+		}
+		else
+		{
+			std::cout << "[CASE 10] INCORRECT";
+		}
+		std::cout << "\n";
 	}
 
-	// Edge Case 1
+	/*
+	 *[Edge Case] deleting node 35 where parent has bf = -1 and root has bf = 1 ->
+	 * right-left double rotation to balance ->
+	 * 55 should be new root with bf = 0
+	 */
 	{
 		AVLTree<int> t;
-		std::cout << "[Edge Case 1] deleting node 35 where parent has bf = -1 and root has bf = 1 -> "
-				  << "\n right-left double rotation to balance ->"
-				  << "\n 60 should be new root with bf = 0\n";
 		std::vector<int> insertionsInOrder = {50, 30, 60, 20, 35, 55, 70, 15, 52, 58, 77, 57};
 		for (auto i = 0; i < insertionsInOrder.size(); ++i)
 		{
 			t.insertNode(insertionsInOrder.at(i));
 		}
 		t.removeNode(35);
-		t.printTree();
-		std::cout << "\n\n";
+		// t.printTree();
+		const auto newRoot = t.getRoot();
+		const auto _50 = t.searchNode(50);
+		const auto _58 = t.searchNode(58);
+		const auto _70 = t.searchNode(70);
+		if (newRoot->getBf() == 0 &&
+			newRoot->getData() == 55 &&
+			_50->getBf() == -1 &&
+			_50->getParent() == newRoot &&
+			_58->getBf() == -1 &&
+			_58->getParent() == newRoot->getRight() &&
+			_70->getBf() == 1 &&
+			_70->getParent() == newRoot->getRight())
+		{
+			std::cout << "[Edge Case] CORRECT";
+		}
+		else
+		{
+			std::cout << "[Edge Case] INCORRECT";
+		}
+		std::cout << "\n";
 	}
 
 	return 0;
@@ -366,4 +590,5 @@ int main(int argc, char *argv[])
 	// return testingHashTableWithBenchmark();
 	// return testingBinarySearchTree();
 	return testAVLTreeDeletionCases();
+	// return testAVLTreeSearchCases();
 }
