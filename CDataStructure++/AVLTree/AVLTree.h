@@ -52,20 +52,22 @@ public:
 	 */
 	void removeNode(const T &data)
 	{
-		_AVL_fromRight_Pair retValue = removeNode(data, root);
-		auto parentRemovedNodeRef = retValue.first;
-		auto isDeletedFromRightTree = retValue.second;
+		const auto retValue = removeNode(data, root);
+		const auto parentRemovedNodeRef = retValue.first;
+		const auto isDeletedFromRightTree = retValue.second;
 
 		if (parentRemovedNodeRef)
-			rebalanceTreeDeletion(parentRemovedNodeRef, isDeletedFromRightTree);
+			rebalanceTree(parentRemovedNodeRef, isDeletedFromRightTree, false);
 	}
 
 	void insertNode(const T &data)
 	{
-		const auto insertedNodeRef = insertNode(data, root);
+		const auto retValue = insertNode(data, root);
+		const auto insertedNodeParent = retValue.first;
+		const auto insertedFromRight = retValue.second;
 
-		if (insertedNodeRef)
-			rebalanceTreeInsertion(insertedNodeRef);
+		if (insertedNodeParent)
+			rebalanceTree(insertedNodeParent, insertedFromRight, true);
 	}
 
 	AVLNode<T> *getRoot()
@@ -166,36 +168,145 @@ private:
 		}
 	}
 
-	void rebalanceTreeDeletion(AVLNode<T> *parentDeletedNode, bool rightIsDeleted)
+	void rebalanceTree(AVLNode<T> *retraceNode, bool comingFromRight, bool isInsertion)
 	{
-		if (rightIsDeleted)
+		if (comingFromRight)
 		{
-			// if node is deleted from the right subtree, then subtract 1 to current parent node
-			rebalanceTreeDeletion(parentDeletedNode, DECREMENT_BF);
-		}
-		else
-		{
-			// if node is deleted from the left subtree, then increment 1 to current parent node
-			rebalanceTreeDeletion(parentDeletedNode, INCREMENT_BF);
-		}
-	}
-
-	void rebalanceTreeInsertion(AVLNode<T> *insertedNode)
-	{
-		AVLNode<T> *parentCurrNode = insertedNode->getParent();
-
-		// if the root is inserted, then no updates are needed since the tree is already balanced.
-		if (parentCurrNode != nullptr)
-		{
-			if (isRightChild(parentCurrNode, insertedNode))
+			if (isInsertion)
 			{
 				// if node is inserted to the right, then add 1 to direct parent node
-				rebalanceTreeInsertion(parentCurrNode, insertedNode, INCREMENT_BF);
+				return rebalanceTree(retraceNode, INCREMENT_BF, isInsertion);
 			}
 			else
 			{
+				// if node is deleted from the right subtree, then subtract 1 to current parent node
+				return rebalanceTree(retraceNode, DECREMENT_BF, isInsertion);
+			}
+		}
+		else
+		{
+			if (isInsertion)
+			{
 				// if node is inserted to the left, then subtract 1 to direct parent node
-				rebalanceTreeInsertion(parentCurrNode, insertedNode, DECREMENT_BF);
+				return rebalanceTree(retraceNode, DECREMENT_BF, isInsertion);
+			}
+			else
+			{
+				// if node is deleted from the left subtree, then increment 1 to current parent node
+				return rebalanceTree(retraceNode, INCREMENT_BF, isInsertion);
+			}
+		}
+	}
+
+	/**
+	 * @brief Rebalancing tree using rotations if the tree gets unbalanced (not adhering to the invariant) after insertion/deletion.
+	 *
+	 * @param currNode The current node being processed. This is changed to new currNode when a rotation happens because in that case
+	 * 	the currNode does not correspond to the node that we were at since the height of the nodes changes. So to retrace from the same height
+	 * 	the currNode is changed to the new currNode after rotation.
+	 *
+	 * @param bfDiff The balance factor value that the currNode bf value will change to (either decrement of increment by 1).
+	 * @param isInsertion Indication of whether an insertion happened (true) or a deletion (false)
+	 */
+	void rebalanceTree(AVLNode<T> *currNode, const signed char bfDiff, bool isInsertion)
+	{
+		// we reached root, no updates/rebalancing are possible thus just return
+		if (currNode == nullptr)
+		{
+			return;
+		}
+
+		// increment/decrement bf value of currNode
+		currNode->setBf(currNode->getBf() + bfDiff);
+
+		const auto prevCurrNode = currNode;
+		auto currNodeBf = currNode->getBf();
+		auto rotationOccured = false;
+
+		// the parent has unbalanced subtrees and is left-heavy (invariant is violated)
+		// taking left child as child node for rotation
+		if (currNodeBf < -1)
+		{
+			const auto currNodeLeft = currNode->getLeft();
+			const auto currNodeLeftBf = currNodeLeft->getBf();
+
+			if (currNodeLeftBf <= 0) // Left Left	- Z is a left	child of its parent X and BF(Z) <= 0
+			{
+				currNode = rotateRight(currNode, currNodeLeft);
+			}
+			else // Left Right	- Z is a left	child of its parent X and BF(Z) > 0
+			{
+				currNode = rotateLeftRight(currNode, currNodeLeft);
+			}
+
+			rotationOccured = true;
+		}
+		// the parent has unbalanced subtrees and is right-heavy (invariant is violated)
+		else if (currNodeBf > 1)
+		{
+			const auto currNodeRight = currNode->getRight();
+			const auto currNodeRightBf = currNodeRight->getBf();
+
+			if (currNodeRightBf >= 0) // Right Right	- Z is a right	child of its parent X and BF(Z) >= 0
+			{
+				currNode = rotateLeft(currNode, currNodeRight);
+			}
+			else // Right Left	- Z is a right	child of its parent X and BF(Z) < 0
+			{
+				currNode = rotateRightLeft(currNode, currNodeRight);
+			}
+
+			rotationOccured = true;
+		}
+
+		if (rotationOccured)
+		{
+			// update currNode bf to new bf after rotation
+			currNodeBf = currNode->getBf();
+
+			// update root to the new root node if a rotation has occured.
+			if (prevCurrNode == root)
+			{
+				root = currNode;
+			}
+		}
+
+		// Deletion: stop if after deletion of node and modifying bf value of parent of the deleted or after rotation
+		// node the bf value becomes -1 or +1
+		// Insertion: stop if during insertion and after modifying bf value of parent or after rotation
+		// the bf value becomes 0
+		if (
+			(!isInsertion && (currNodeBf == -1 || currNodeBf == 1)) ||
+			(isInsertion && currNode->getBf() == 0))
+		{
+			return;
+		}
+
+		const auto nextParent = currNode->getParent();
+
+		if (nextParent != nullptr)
+		{
+			if (isRightChild(nextParent, currNode))
+			{
+				if (isInsertion)
+				{
+					return rebalanceTree(nextParent, INCREMENT_BF, isInsertion);
+				}
+				else
+				{
+					return rebalanceTree(nextParent, DECREMENT_BF, isInsertion);
+				}
+			}
+			else
+			{
+				if (isInsertion)
+				{
+					return rebalanceTree(nextParent, DECREMENT_BF, isInsertion);
+				}
+				else
+				{
+					return rebalanceTree(nextParent, INCREMENT_BF, isInsertion);
+				}
 			}
 		}
 	}
@@ -420,222 +531,14 @@ private:
 		// return nullptr;
 	}
 
-	inline void rebalanceTreeInsertion(
-		AVLNode<T> *parentNode,
-		AVLNode<T> *currNode,
-		const signed char bfDiff)
-	{
-		// increment/decrement bf value of parent node
-		parentNode->setBf(parentNode->getBf() + bfDiff);
-
-		const auto bfParent = parentNode->getBf();
-
-		// Insertion: stop if during insertion and after modifying bf value of parent
-		// the bf value becomes 0
-		if (bfParent == 0)
-		{
-			return;
-		}
-
-		// the parent has unbalanced subtrees (invariant is violated)
-		if (bfParent < -1 || bfParent > 1)
-		{
-			// FROM WIKIPEDIA:
-			// The rebalancing is performed differently :
-			//	Right Right	- X is rebalanced with a simple	rotation rotate_Left
-			//	Left Left	- X is rebalanced with a simple	rotation rotate_Right
-			//	Right Left	- X is rebalanced with a double	rotation rotate_RightLeft
-			//	Left Right	- X is rebalanced with a double	rotation rotate_LeftRight
-
-			if (parentNode->getRight() == currNode && currNode->getBf() >= 0) // Right Right	- Z is a right	child of its parent X and BF(Z) >= 0
-			{
-				if (parentNode == root)
-				{
-					root = rotateLeft(parentNode, currNode);
-				}
-				else
-				{
-					rotateLeft(parentNode, currNode);
-				}
-			}
-			else if (parentNode->getRight() == currNode && currNode->getBf() < 0) // Right Left	- Z is a right	child of its parent X and BF(Z) < 0
-			{
-				if (parentNode == root)
-				{
-					root = rotateRightLeft(parentNode, currNode);
-				}
-				else
-				{
-					rotateRightLeft(parentNode, currNode);
-				}
-			}
-			else if (parentNode->getLeft() == currNode && currNode->getBf() <= 0) // Left Left	- Z is a left	child of its parent X and BF(Z) <= 0
-			{
-				if (parentNode == root)
-				{
-					root = rotateRight(parentNode, currNode);
-				}
-				else
-				{
-					rotateRight(parentNode, currNode);
-				}
-			}
-			else if (parentNode->getLeft() == currNode && currNode->getBf() > 0) // Left Right	- Z is a left	child of its parent X and BF(Z) > 0
-			{
-				if (parentNode == root)
-				{
-					root = rotateLeftRight(parentNode, currNode);
-				}
-				else
-				{
-					rotateLeftRight(parentNode, currNode);
-				}
-			}
-			else
-			{
-				std::cout << "[rebalanceTreeInsertion] bfParent: " << bfParent << " , the else branch is reached which should not happen!";
-			}
-		}
-		else // tree from parent node is balanced (invariant holds true), no need for rotation
-		{
-			auto parentParentNode = parentNode->getParent();
-
-			// no updates possible to a parentNode if we are at the root
-			if (parentParentNode == nullptr)
-			{
-				return;
-			}
-
-			// recurse upwards with new parent node, change bfDiff to +1 if going from right-up the tree
-			// or -1 if going from left-up direction. This is done so that bf values are correctly modified
-			// as the increment or decrement of the bf value depends on whether we go up from the right of the left node.
-			if (isRightChild(parentParentNode, parentNode))
-			{
-				return rebalanceTreeInsertion(parentParentNode, parentNode, INCREMENT_BF);
-			}
-			else
-			{
-				return rebalanceTreeInsertion(parentParentNode, parentNode, DECREMENT_BF);
-			}
-		}
-	}
-
-	void rebalanceTreeDeletion(AVLNode<T> *currNode, const signed char bfDiff)
-	{
-		if (currNode == nullptr)
-		{
-			return;
-		}
-
-		// increment/decrement bf value of parent node
-		currNode->setBf(currNode->getBf() + bfDiff);
-
-		const auto currNodeBf = currNode->getBf();
-
-		// This variable is only used when a rotation happened because of unbalanced tree
-		// In this case next parent would be parent of returned node after rotation.
-		AVLNode<T> *nextParentAfterRotation = nullptr;
-
-		// Deletion: stop if after deletion of node and modifying bf value of parent of the deleted
-		// node the bf value becomes -1 or +1
-		if (currNodeBf == -1 || currNodeBf == 1)
-		{
-			return;
-		}
-		// the parent has unbalanced subtrees and is left-heavy (invariant is violated)
-		// taking left child as child node for rotation
-		else if (currNodeBf < -1)
-		{
-			AVLNode<T> *currNodeLeft = currNode->getLeft();
-			const auto currNodeLeftBf = currNodeLeft->getBf();
-
-			if (currNodeLeftBf <= 0) // Left Left	- Z is a left	child of its parent X and BF(Z) <= 0
-			{
-				nextParentAfterRotation = rotateRight(currNode, currNodeLeft);
-				if (currNode == root)
-				{
-					root = nextParentAfterRotation;
-				}
-			}
-			else if (currNodeLeftBf > 0) // Left Right	- Z is a left	child of its parent X and BF(Z) > 0
-			{
-				nextParentAfterRotation = rotateLeftRight(currNode, currNodeLeft);
-				if (currNode == root)
-				{
-					root = nextParentAfterRotation;
-				}
-			}
-			else
-			{
-				std::cout << "[rebalanceTreeDeletion] {currNodeBf < -1} should not ever come here. Bug detected";
-			}
-		}
-		// the parent has unbalanced subtrees and is right-heavy (invariant is violated)
-		else if (currNodeBf > 1)
-		{
-			AVLNode<T> *currNodeRight = currNode->getRight();
-			const auto currNodeRightBf = currNodeRight->getBf();
-
-			if (currNodeRightBf >= 0) // Right Right	- Z is a right	child of its parent X and BF(Z) >= 0
-			{
-				nextParentAfterRotation = rotateLeft(currNode, currNodeRight);
-				if (currNode == root)
-				{
-					root = nextParentAfterRotation;
-				}
-			}
-			else if (currNodeRightBf < 0) // Right Left	- Z is a right	child of its parent X and BF(Z) < 0
-			{
-				nextParentAfterRotation = rotateRightLeft(currNode, currNodeRight);
-				if (currNode == root)
-				{
-					root = nextParentAfterRotation;
-				}
-			}
-			else
-			{
-				std::cout << "[rebalanceTreeDeletion] {currNodeBf > 1} should not ever come here. Bug detected";
-			}
-		}
-
-		AVLNode<T> *nextParent = nullptr;
-
-		if (nextParentAfterRotation == nullptr)
-		{
-			// no rotation has occured, continue with parent of current node
-			nextParent = currNode->getParent();
-		}
-		else
-		{
-			// a rotation has occured, continue with parent of returned rotated node
-			nextParent = nextParentAfterRotation->getParent();
-			// assign currNode to node after rotation since currNode (where we are now) changes after rotation
-			// so this is done to keep parent and currNode aligned with each other so that isRightChild check is
-			// done correctly.
-			currNode = nextParentAfterRotation;
-		}
-
-		if (nextParent != nullptr)
-		{
-			if (isRightChild(nextParent, currNode))
-			{
-				return rebalanceTreeDeletion(nextParent, DECREMENT_BF);
-			}
-			else
-			{
-				return rebalanceTreeDeletion(nextParent, INCREMENT_BF);
-			}
-		}
-	}
-
-	AVLNode<T> *insertNode(
+	_AVL_fromRight_Pair insertNode(
 		const T &data,
 		AVLNode<T> *currNode)
 	{
 		if (root == nullptr)
 		{
 			root = new AVLNode<T>(data);
-			return root;
+			// return std::make_pair(nullptr, false);
 		}
 		else if (currNode != nullptr)
 		{
@@ -648,7 +551,7 @@ private:
 				else
 				{
 					currNode->setLeft(new AVLNode<T>(data, currNode));
-					return currNode->getLeft();
+					return std::make_pair(currNode, false);
 				}
 			}
 			else if (data > currNode->getData())
@@ -660,13 +563,13 @@ private:
 				else
 				{
 					currNode->setRight(new AVLNode<T>(data, currNode));
-					return currNode->getRight();
+					return std::make_pair(currNode, true);
 				}
 			}
 		}
 
 		// don't add a node with the same data value twice, just return nullptr
-		return nullptr;
+		return std::make_pair(nullptr, false);
 	}
 
 	/*
