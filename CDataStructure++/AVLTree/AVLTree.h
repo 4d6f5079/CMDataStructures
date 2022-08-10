@@ -27,7 +27,7 @@ public:
 	{
 	}
 
-	// Delete constructors which may cause headache and bugs
+	// Delete implicit constructors which may cause headache and bugs
 	AVLTree(const AVLTree<T> &) = delete;
 	AVLTree(AVLTree<T> &&) = delete;
 
@@ -36,6 +36,12 @@ public:
 		cleanUpTree(root);
 	}
 
+	/**
+	 * @brief Prints the AVLTree.
+	 *
+	 * @param node The root node from which to start printing nodes.
+	 * (default) If node is nullptr, then root of the tree is used as start node.
+	 */
 	void printTree(AVLNode<T> *node = nullptr)
 	{
 		std::cout << "Printing the AVL Tree\n";
@@ -52,8 +58,13 @@ public:
 		}
 	}
 
-	/*
-	 *	Remove node with given data. Rebalance tree appropriately.
+	/**
+	 * @brief Remove node with given data. Rebalance tree appropriately.
+	 *
+	 * @details Time-complexity is O(Log(N))
+	 *
+	 * 	1 - removeNodeHelper: O(Log(N)) for lookup and O(1) for removal
+	 * 	2 - rebalanceTree: O(Log(N)) for retracing and O(1) for rebalancing using rotations
 	 */
 	void removeNode(const T &data)
 	{
@@ -65,6 +76,15 @@ public:
 			rebalanceTree(parentRemovedNodeRef, isDeletedFromRightTree, false);
 	}
 
+	/**
+	 * @brief Inserts new node in the tree adhering to BST rules of insertion.
+	 *
+	 * @details Time-complexity is O(Log(N))
+	 * 1 - insertNode: O(Log(N)) for finding right place to insert new node
+	 * 2 - rebalanceTree: O(Log(N)) for retracing and O(1) for rebalancing using rotations
+	 *
+	 * @param data The data that the new node should contain
+	 */
 	void insertNode(const T &data)
 	{
 		const auto retValue = insertNode(data, root);
@@ -114,6 +134,12 @@ public:
 		return nullptr;
 	}
 
+	/**
+	 * @brief Find the inorder successor of a node given the right node of that node.
+	 *
+	 * @param rightNodeOfCurrNode The right node of the node for which to search the inorder successor node.
+	 * @return AVLNode<T>*: Pointer to inorder successor node
+	 */
 	inline AVLNode<T> *findInorderSuccessor(AVLNode<T> *rightNodeOfCurrNode)
 	{
 		if (rightNodeOfCurrNode != nullptr)
@@ -583,8 +609,20 @@ private:
 		return std::make_pair(nullptr, false);
 	}
 
-	// TODO: this should be the new removeNode function
-	// remove the found node, worst case: O(log(N)) for finding inorder successor from root of the tree
+	/**
+	 * @brief Should be the same way as with deletion in BST.
+	 * Regarding balance factor and flow of updates:
+	 * 	1: The BF of successor node should be replaced with the BF of the removed node
+	 *	2: After deletion, the parent before deletion of the node that is used to replace the deleted
+	 *       node should be used to recursivly update BF values of parent nodes until BF of -1 or 1 is found
+	 *
+	 * Time-complexity: O(log(N)) for lookup and removal (search for inorder successor from root)
+	 *
+	 * @param data The node containing this data should be removed
+	 * @return Pair containing the node for rebalancing and
+	 *  	   bool for whether the node that is deleted is deleted from the right/left.
+	 * 		   If the node to delete is not present in the tree, a pair containing (nullptr,false) is returned.
+	 */
 	_AVL_fromRight_Pair removeNodeHelper(const T &data)
 	{
 		// Step 1: lookup node to be deleted.
@@ -598,19 +636,21 @@ private:
 
 		// Step 2: remove the node that needs to be deleted, fix references and replace the deleted node with the
 		// 	approperiate node
-		AVLNode<T> *parentNode = currNode->getParent(); // parent of the root of this (sub-)tree
-		AVLNode<T> *retNode = nullptr;					// the replacement node of the root that will be deleted
-		const bool isRootToBeRemoved = (parentNode == nullptr);
+		AVLNode<T> *parentNode = currNode->getParent();			// parent of the root of this (sub-)tree
+		AVLNode<T> *retNode = nullptr;							// the node from which to start rebalancing
+		AVLNode<T> *newRootAssignment = nullptr;				// the node that replaces the removed root of the AVLTree
+		const bool isRootToBeRemoved = (parentNode == nullptr); // bool indicating whether the root will be removed or not
 
 		// make sure correct fromRight value is given as it can be right/left depending on parent ref
 		// TODO: check whether this can be programmatically done with isRightChild method
+		//		 by changing parentNode where necessary
 		bool deletedFromRight = false;
 
 		if (!currNode->hasLeft() && !currNode->hasRight())
 		{
 			setChildFromParent(parentNode, currNode, nullptr); // set parent node approperiate child to nullptr as it is deleted
 
-			retNode = parentNode;
+			newRootAssignment = retNode = parentNode;
 		}
 		else if (!currNode->hasRight() && currNode->hasLeft())
 		{
@@ -619,7 +659,7 @@ private:
 			leftCurrNode->setBf(currNode->getBf());					// set bf of left child to bf of currNode
 			setChildFromParent(parentNode, currNode, leftCurrNode); // update parent ref to point to the new child
 
-			retNode = leftCurrNode;
+			newRootAssignment = retNode = leftCurrNode;
 		}
 		else if (currNode->hasRight() && !currNode->hasLeft())
 		{
@@ -628,7 +668,7 @@ private:
 			rightCurrNode->setBf(currNode->getBf());				 // set bf of right child to bf of currNode
 			setChildFromParent(parentNode, currNode, rightCurrNode); // update parent ref to point to the new child
 
-			retNode = rightCurrNode;
+			newRootAssignment = retNode = rightCurrNode;
 			deletedFromRight = true;
 		}
 		else
@@ -644,10 +684,8 @@ private:
 				inorderSuccessorNode->setBf(currNode->getBf());		// bf value should be same as currNode
 				setChildFromParent(parentNode, currNode, inorderSuccessorNode);
 
-				retNode = inorderSuccessorNode;
+				newRootAssignment = retNode = inorderSuccessorNode;
 				deletedFromRight = true;
-				// parentNode = parentInorderSuccessorNode;
-				// std::cout << "parentNode == parentInorderSuccessorNode: " << (parentNode == parentInorderSuccessorNode) << std::endl; // TODO: check if this is even needed since parentNode is the same? delete this as it is for DEBUGGING ONLY
 			}
 			else // successor node is somewhere in the tree
 			{
@@ -671,12 +709,12 @@ private:
 				setChildFromParent(parentNode, currNode, inorderSuccessorNode); // set inorder successor as the new root
 
 				retNode = parentInorderSuccessorNode;
-				// parentNode = parentInorderSuccessorNode->getParent();
+				newRootAssignment = inorderSuccessorNode;
 			}
 		}
 
 		if (isRootToBeRemoved)
-			root = retNode;
+			root = newRootAssignment;
 
 		// delete the node that needs to be deleted
 		delete currNode;
@@ -686,197 +724,6 @@ private:
 		// from which direction the node got deleted
 		return std::make_pair(retNode, deletedFromRight);
 	}
-
-	/*
-	 * Should be the same way as with deletion in BST.
-	 * Regarding balance factor and flow of updates:
-	 * 	1: The BF of successor node should be replaced with the BF of the removed node
-	 *	2: After deletion, the parent before deletion of the node that is used to replace the deleted
-	 *       node should be used to recursivly update BF values of parent nodes until BF of -1 or 1 is found
-	 */
-	// _AVL_fromRight_Pair removeNode(
-	// 	const T &data,
-	// 	AVLNode<T> *currNode)
-	// {
-	// 	if (currNode == nullptr)
-	// 	{
-	// 		return std::make_pair(nullptr, false);
-	// 	}
-
-	// 	if (data < currNode->getData())
-	// 	{
-	// 		return removeNode(data, currNode->getLeft());
-	// 	}
-	// 	else if (data > currNode->getData())
-	// 	{
-	// 		return removeNode(data, currNode->getRight());
-	// 	}
-	// 	else
-	// 	{
-	// 		// Current node contains the given data.
-	// 		// There are 4 options for deletion:
-	// 		//	1: currNode has no children -> let the parent point to nullptr and then delete the currNode
-	// 		//	2: currNode has only left child -> make left child the new currNode and delete the old currNode
-	// 		//	3: currNode has only right child -> make the parent left/right ref point to right child the currNode and delete the old currNode
-	// 		//	4: currNode has both children:
-	// 		//		4.1: if the direct right node of currNode does not have a left child, then:
-	// 		//			4.1.1: make the right node the new currNode
-	// 		//			4.1.2: make the child of new currNode the left child of old currNode
-	// 		//			4.1.3: make parent node point to new currNode
-	// 		//			4.1.4: delete old currNode
-	// 		//		4.2: if the direct right node of currNode does have a left child, then search for inorder successor node by traversing to the deepest left node
-	// 		//		4.3: make successor the new root of the tree
-	// 		//			4.3.1: if successor has right child, make the left child of parent of the successor point to that child
-
-	// 		// TODO: this if statement is only done to change root pointer which is not possible
-	// 		// by changing the currNode pointer. See if somehow reference of pointer can be passed instead
-	// 		// to change the copy of the pointer outside of the function to point somewhere else.
-	// 		if (currNode->getParent() == nullptr) // root contains the value we need to remove
-	// 		{
-	// 			if (!currNode->hasLeft() && !currNode->hasRight())
-	// 			{
-	// 				delete root;
-	// 				root = nullptr;
-	// 				return std::make_pair(root, false);
-	// 			}
-	// 			else if (!currNode->hasRight() && currNode->hasLeft())
-	// 			{
-	// 				AVLNode<T> *leftOfCurrNode = currNode->getLeft(); // get left child of root
-	// 				leftOfCurrNode->setParent(nullptr);				  // set parent of left child to nullptr
-	// 				leftOfCurrNode->setBf(root->getBf());			  // set bf to value of root
-	// 				root = leftOfCurrNode;							  // assign root to left child
-	// 				delete currNode;								  // delete previous root
-	// 				currNode = nullptr;
-	// 				return std::make_pair(root, false); // return pair with root and fromRight bool
-	// 			}
-	// 			else if (currNode->hasRight() && !currNode->hasLeft())
-	// 			{
-	// 				AVLNode<T> *rightOfCurrNode = currNode->getRight(); // get right child of root
-	// 				rightOfCurrNode->setParent(nullptr);				// set parent of right child to nullptr
-	// 				rightOfCurrNode->setBf(root->getBf());				// set bf to value of root
-	// 				root = rightOfCurrNode;								// assign root to right child
-	// 				delete currNode;									// delete previous root
-	// 				currNode = nullptr;
-	// 				return std::make_pair(root, true); // return pair with root and fromRight bool
-	// 			}
-	// 			else
-	// 			{
-	// 				AVLNode<T> *inorderSuccessorNode = findInorderSuccessor(currNode->getRight());
-	// 				AVLNode<T> *parentInorderSuccessorNode = inorderSuccessorNode->getParent();
-
-	// 				// successor node is the direct right node from the root
-	// 				if (inorderSuccessorNode == currNode->getRight())
-	// 				{
-	// 					inorderSuccessorNode->setLeft(root->getLeft()); // set left of successor to left subtree of root
-	// 					inorderSuccessorNode->setParent(nullptr);		// parent is now nullptr since successor is new root
-	// 					inorderSuccessorNode->setBf(root->getBf());		// bf value should be same as root node
-	// 					root = inorderSuccessorNode;					// assign root to inorder successor
-	// 					delete currNode;								// delete previous root
-	// 					currNode = nullptr;
-	// 					return std::make_pair(root, true); // return pair with inorder successor and fromRight bool
-	// 				}
-	// 				else // successor node is somewhere in the tree
-	// 				{
-	// 					AVLNode<T> *rightOfSuccessorNode = inorderSuccessorNode->getRight();
-	// 					parentInorderSuccessorNode->setLeft(rightOfSuccessorNode); // set left of parent successor to right of successor
-	// 					// if successor has right node, then make parent of right node the parent of successor
-	// 					if (rightOfSuccessorNode != nullptr)
-	// 					{
-	// 						rightOfSuccessorNode->setParent(parentInorderSuccessorNode);
-	// 					}
-	// 					// Set the parent of the successor node parent to the successor itself as it replaces the old root
-	// 					// which, if the parent of successor node is not updated, will be deleted and parent will point to nullptr
-	// 					if (parentInorderSuccessorNode->getParent() == root)
-	// 					{
-	// 						parentInorderSuccessorNode->setParent(inorderSuccessorNode);
-	// 					}
-	// 					inorderSuccessorNode->setLeft(root->getLeft());	  // set left subtree of prev. root to new root
-	// 					inorderSuccessorNode->setRight(root->getRight()); // set right subtree of prev. root to new root
-	// 					inorderSuccessorNode->setParent(nullptr);		  // set parent of inorder successor to nullptr since it is now the root
-	// 					inorderSuccessorNode->setBf(root->getBf());		  // bf value should be same as root node
-	// 					root = inorderSuccessorNode;					  // set inorder successor as the new root
-	// 					delete currNode;								  // delete previous root
-	// 					currNode = nullptr;
-	// 					return std::make_pair(parentInorderSuccessorNode, false); // return parent of successor with fromRight false since it is always the left child
-	// 				}
-	// 			}
-	// 		}
-	// 		else
-	// 		{
-	// 			AVLNode<T> *parentNode = currNode->getParent();
-
-	// 			if (!currNode->hasLeft() && !currNode->hasRight())
-	// 			{
-	// 				const auto isRightNode = isRightChild(parentNode, currNode); // make sure correct fromRight value is given as it can be right/left depending on parent ref
-	// 				setChildFromParent(parentNode, currNode, nullptr);			 // set parent node approperaite child to nullptr as it is deleted
-	// 				delete currNode;											 // delete the node that needs to be deleted
-	// 				currNode = nullptr;
-	// 				return std::make_pair(parentNode, isRightNode); // return parent node for rebalancing, fromRight bool does not matter
-	// 			}
-	// 			else if (!currNode->hasRight() && currNode->hasLeft())
-	// 			{
-	// 				AVLNode<T> *leftCurrNode = currNode->getLeft();
-	// 				leftCurrNode->setParent(parentNode);					// change parent of left child to parent of currNode
-	// 				leftCurrNode->setBf(currNode->getBf());					// set bf of left child to bf of currNode
-	// 				setChildFromParent(parentNode, currNode, leftCurrNode); // update parent ref to point to the new child
-	// 				delete currNode;										// delete currNode
-	// 				currNode = nullptr;
-	// 				return std::make_pair(leftCurrNode, false); // return new child of the parent for rebalancing with fromRight false
-	// 			}
-	// 			else if (currNode->hasRight() && !currNode->hasLeft())
-	// 			{
-	// 				AVLNode<T> *rightCurrNode = currNode->getRight();
-	// 				rightCurrNode->setParent(parentNode);					 // change parent of right child to parent of currNode
-	// 				rightCurrNode->setBf(currNode->getBf());				 // set bf of right child to bf of currNode
-	// 				setChildFromParent(parentNode, currNode, rightCurrNode); // update parent ref to point to the new child
-	// 				delete currNode;										 // delete currNode
-	// 				currNode = nullptr;
-	// 				return std::make_pair(rightCurrNode, true); // return new child of the parent for rebalancing with fromRight is true
-	// 			}
-	// 			else
-	// 			{
-	// 				AVLNode<T> *inorderSuccessorNode = findInorderSuccessor(currNode->getRight());
-	// 				AVLNode<T> *parentInorderSuccessorNode = inorderSuccessorNode->getParent();
-
-	// 				// successor node is the direct right node from the root
-	// 				if (inorderSuccessorNode == currNode->getRight())
-	// 				{
-	// 					inorderSuccessorNode->setLeft(currNode->getLeft()); // set left of successor to left subtree of currNode
-	// 					inorderSuccessorNode->setParent(parentNode);		// parent is now parentNode
-	// 					inorderSuccessorNode->setBf(currNode->getBf());		// bf value should be same as currNode
-	// 					setChildFromParent(parentNode, currNode, inorderSuccessorNode);
-	// 					delete currNode; // delete currNode
-	// 					currNode = nullptr;
-	// 					return std::make_pair(inorderSuccessorNode, true); // return pair with inorder successor and fromRight bool
-	// 				}
-	// 				else // successor node is somewhere in the tree
-	// 				{
-	// 					AVLNode<T> *rightOfSuccessorNode = inorderSuccessorNode->getRight();
-	// 					parentInorderSuccessorNode->setLeft(rightOfSuccessorNode); // set left of parent successor to right of successor
-	// 					// if successor has right node, then make parent of right node the parent of successor
-	// 					if (rightOfSuccessorNode != nullptr)
-	// 					{
-	// 						rightOfSuccessorNode->setParent(parentInorderSuccessorNode);
-	// 					}
-	// 					// Set the parent of the successor node parent to the successor itself as it replaces the currNode
-	// 					// which, if the parent of successor node is not updated, will be deleted and parent will point to nullptr
-	// 					if (parentInorderSuccessorNode->getParent() == currNode)
-	// 					{
-	// 						parentInorderSuccessorNode->setParent(inorderSuccessorNode);
-	// 					}
-	// 					inorderSuccessorNode->setLeft(currNode->getLeft());				// set left subtree of prev. root to new root
-	// 					inorderSuccessorNode->setRight(currNode->getRight());			// set right subtree of prev. root to new root
-	// 					inorderSuccessorNode->setParent(parentNode);					// set parent of inorder successor to parentNode
-	// 					inorderSuccessorNode->setBf(currNode->getBf());					// bf value should be same as inorder successor
-	// 					setChildFromParent(parentNode, currNode, inorderSuccessorNode); // set inorder successor as the new root
-	// 					delete currNode;												// delete previous root
-	// 					currNode = nullptr;
-	// 					return std::make_pair(parentInorderSuccessorNode, false); // return parent of successor with fromRight false since it is always the left child
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
 
 	void cleanUpTree(AVLNode<T> *currNode)
 	{

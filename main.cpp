@@ -736,7 +736,7 @@ int main(int argc, char *argv[])
 {
 	// return testingHashTableWithBenchmark();
 	// return testingBinarySearchTree();
-	// testAVLTreeSearchCases();
-	// testAVLTreeInsertionCases();
+	testAVLTreeSearchCases();
+	testAVLTreeInsertionCases();
 	return testAVLTreeDeletionCases();
 }
