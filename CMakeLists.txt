@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Here FLAGS can be given to compiler when building in Debug/Release mode
 #set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
-#set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
+# set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
 
 project (CDataStructure++ VERSION 1.0)
 
