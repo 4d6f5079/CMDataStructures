@@ -747,7 +747,7 @@ int benchmarkAVLTree()
 	for (std::size_t insertionIters = 0; insertionIters < LOOP_ITERATIONS_POPULATION.size(); ++insertionIters)
 	{
 		{
-			std::cout << "insertion with iters = " << LOOP_ITERATIONS_POPULATION[insertionIters] << "\n";
+			std::cout << "Insertion with iters = " << LOOP_ITERATIONS_POPULATION[insertionIters] << "\n";
 
 			AVLTree<int> tree;
 			Timer t;
@@ -760,6 +760,9 @@ int benchmarkAVLTree()
 
 	for (std::size_t deletionIters = 0; deletionIters < LOOP_ITERATIONS_POPULATION.size(); ++deletionIters)
 	{
+		// std::vector<long long> deletionElapsedTimes;
+		// deletionElapsedTimes.clear();
+		// deletionElapsedTimes.reserve(LOOP_ITERATIONS_POPULATION.size());
 		{
 			AVLTree<int> tree;
 
@@ -778,13 +781,21 @@ int benchmarkAVLTree()
 			std::mt19937 del_gen(del_rd());													  // seed the generator
 			std::uniform_int_distribution<std::size_t> del_distr(0, insertedData.size() - 1); // define the range
 
-			std::cout << "removal with iters = " << LOOP_ITERATIONS_POPULATION[deletionIters] << "\n";
+			std::cout << "Removal with iters = " << LOOP_ITERATIONS_POPULATION[deletionIters] << "\n";
+
 			Timer t;
 			for (std::size_t k = 0; k < LOOP_ITERATIONS_POPULATION[deletionIters]; ++k)
 			{
 				tree.removeNode(insertedData[del_distr(del_gen)]);
 			}
 		}
+
+		// long long avgElapsedSeconds = 0;
+		// for (auto it = deletionElapsedTimes.cbegin(); it != deletionElapsedTimes.cend(); ++it)
+		// {
+		// 	avgElapsedSeconds += *it;
+		// }
+		// avgElapsedSeconds /= LOOP_ITERATIONS_POPULATION.size();
 	}
 
 	return 0;
