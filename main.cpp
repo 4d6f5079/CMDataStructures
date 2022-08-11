@@ -761,10 +761,11 @@ int benchmarkAVLTree()
 	for (std::size_t deletionIters = 0; deletionIters < LOOP_ITERATIONS_POPULATION.size(); ++deletionIters)
 	{
 		{
+			AVLTree<int> tree;
+
 			std::vector<int> insertedData;
 			insertedData.clear();
 			insertedData.reserve(LOOP_ITERATIONS_POPULATION[deletionIters]);
-			AVLTree<int> tree;
 
 			for (std::size_t i = 0; i < LOOP_ITERATIONS_POPULATION[deletionIters]; ++i)
 			{
@@ -773,15 +774,15 @@ int benchmarkAVLTree()
 				insertedData.emplace_back(rand_num);
 			}
 
-			// std::random_device del_rd;														  // obtain a random number from hardware
-			// std::mt19937 del_gen(del_rd());													  // seed the generator
-			// std::uniform_int_distribution<std::size_t> del_distr(0, insertedData.size() - 1); // define the range
+			std::random_device del_rd;														  // obtain a random number from hardware
+			std::mt19937 del_gen(del_rd());													  // seed the generator
+			std::uniform_int_distribution<std::size_t> del_distr(0, insertedData.size() - 1); // define the range
 
 			std::cout << "removal with iters = " << LOOP_ITERATIONS_POPULATION[deletionIters] << "\n";
 			Timer t;
-			for (std::size_t k = 0; k < insertedData.size(); ++k)
+			for (std::size_t k = 0; k < LOOP_ITERATIONS_POPULATION[deletionIters]; ++k)
 			{
-				tree.removeNode(insertedData[k]);
+				tree.removeNode(insertedData[del_distr(del_gen)]);
 			}
 		}
 	}
@@ -793,8 +794,8 @@ int main(int argc, char *argv[])
 {
 	// return testingHashTableWithBenchmark();
 	// return testingBinarySearchTree();
-	// testAVLTreeSearchCases();
-	// testAVLTreeInsertionCases();
-	// return testAVLTreeDeletionCases();
+	testAVLTreeSearchCases();
+	testAVLTreeInsertionCases();
+	testAVLTreeDeletionCases();
 	return benchmarkAVLTree();
 }

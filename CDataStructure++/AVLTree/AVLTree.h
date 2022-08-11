@@ -702,7 +702,13 @@ private:
 				AVLNode<T> *leftCurrNode = currNode->getLeft();
 				AVLNode<T> *rightCurrNode = currNode->getRight();
 
-				parentInorderSuccessorNode->setLeft(rightOfSuccessorNode); // set left of parent successor to right of successor
+				parentInorderSuccessorNode->setLeft(rightOfSuccessorNode);		// set left of parent successor to right of successor
+				inorderSuccessorNode->setLeft(leftCurrNode);					// set left subtree of prev. root to new root
+				inorderSuccessorNode->setRight(rightCurrNode);					// set right subtree of prev. root to new root
+				inorderSuccessorNode->setParent(parentNode);					// set parent of inorder successor to parentNode
+				inorderSuccessorNode->setBf(currNode->getBf());					// bf value should be same as inorder successor
+				setChildFromParent(parentNode, currNode, inorderSuccessorNode); // set inorder successor as the new root
+
 				// if successor has right node, then make parent of right node the parent of successor
 				if (rightOfSuccessorNode != nullptr)
 				{
@@ -714,12 +720,6 @@ private:
 				{
 					parentInorderSuccessorNode->setParent(inorderSuccessorNode);
 				}
-
-				inorderSuccessorNode->setLeft(leftCurrNode);					// set left subtree of prev. root to new root
-				inorderSuccessorNode->setRight(rightCurrNode);					// set right subtree of prev. root to new root
-				inorderSuccessorNode->setParent(parentNode);					// set parent of inorder successor to parentNode
-				inorderSuccessorNode->setBf(currNode->getBf());					// bf value should be same as inorder successor
-				setChildFromParent(parentNode, currNode, inorderSuccessorNode); // set inorder successor as the new root
 
 				// set parent of left and right nodes of currNode to the new currNode (inorderSuccessor)
 				// so that the references don't break
