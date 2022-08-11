@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <exception>
 #include <vector>
+#include <array>
 
 const std::string randomStrGen(const size_t &length, const size_t &rndNum)
 {
@@ -732,11 +733,68 @@ int testAVLTreeDeletionCases()
 	return 0;
 }
 
+int benchmarkAVLTree()
+{
+	// Constants
+	static constexpr std::array<std::size_t, 6> LOOP_ITERATIONS_POPULATION = {10, 1000, 10000, 100000, 1000000, 2000000};
+	static constexpr auto UNIFORM_DIST_RND_MIN = -400000;
+	static constexpr auto UNIFORM_DIST_RND_MAX = 500000;
+
+	std::random_device rd;																  // obtain a random number from hardware
+	std::mt19937 gen(rd());																  // seed the generator
+	std::uniform_int_distribution<int> distr(UNIFORM_DIST_RND_MIN, UNIFORM_DIST_RND_MAX); // define the range
+
+	for (std::size_t insertionIters = 0; insertionIters < LOOP_ITERATIONS_POPULATION.size(); ++insertionIters)
+	{
+		{
+			std::cout << "insertion with iters = " << LOOP_ITERATIONS_POPULATION[insertionIters] << "\n";
+
+			AVLTree<int> tree;
+			Timer t;
+			for (std::size_t i = 0; i < LOOP_ITERATIONS_POPULATION[insertionIters]; ++i)
+			{
+				tree.insertNode(distr(gen));
+			}
+		}
+	}
+
+	for (std::size_t deletionIters = 0; deletionIters < LOOP_ITERATIONS_POPULATION.size(); ++deletionIters)
+	{
+		{
+			std::vector<int> insertedData;
+			insertedData.clear();
+			insertedData.reserve(LOOP_ITERATIONS_POPULATION[deletionIters]);
+			AVLTree<int> tree;
+
+			for (std::size_t i = 0; i < LOOP_ITERATIONS_POPULATION[deletionIters]; ++i)
+			{
+				const auto rand_num = distr(gen);
+				tree.insertNode(rand_num);
+				insertedData.emplace_back(rand_num);
+			}
+
+			// std::random_device del_rd;														  // obtain a random number from hardware
+			// std::mt19937 del_gen(del_rd());													  // seed the generator
+			// std::uniform_int_distribution<std::size_t> del_distr(0, insertedData.size() - 1); // define the range
+
+			std::cout << "removal with iters = " << LOOP_ITERATIONS_POPULATION[deletionIters] << "\n";
+			Timer t;
+			for (std::size_t k = 0; k < insertedData.size(); ++k)
+			{
+				tree.removeNode(insertedData[k]);
+			}
+		}
+	}
+
+	return 0;
+}
+
 int main(int argc, char *argv[])
 {
 	// return testingHashTableWithBenchmark();
 	// return testingBinarySearchTree();
-	testAVLTreeSearchCases();
-	testAVLTreeInsertionCases();
-	return testAVLTreeDeletionCases();
+	// testAVLTreeSearchCases();
+	// testAVLTreeInsertionCases();
+	// return testAVLTreeDeletionCases();
+	return benchmarkAVLTree();
 }
