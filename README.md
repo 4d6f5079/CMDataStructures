@@ -3,7 +3,7 @@
 Various data structures implementations in C++. This is just an exercise for me to understand how raw pointers work in C++ and get acquainted with C++ bloated ecosystem ( don't ask me why :) ).
 
 # *WARNING*  
-The data structures implemented should by no means be used in practice. This repo is created with the sole purpose of experimentating with C++ by implementing data structures. Other libraries offer better and more efficient implementations of what this repo contains.  
+The data structures implemented should by no means be used in practice. This repo is created with the sole purpose of experimentating with C++ by implementing data structures. Other libraries offer better and more efficient implementations of what this repo contains. Use at your own risk!
 
 ## POSSIBLE OPTIMIZATIONS
 
